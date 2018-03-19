@@ -3,8 +3,9 @@
 #include "Controls.h"
 
 Bot::Bot()
+: controls(Controls())
 {
-    controls = Controls();
+    
 }
 
 void Bot::update()
@@ -14,10 +15,15 @@ void Bot::update()
 
 void Bot::debug()
 {
+    controls.debug();
+}
 
+Controls &Bot::getControls()
+{
+    return controls;
 }
 
 void Bot::control()
 {
-    controls.rotate(FORWARD);
+    controls.readJoystick();
 }
