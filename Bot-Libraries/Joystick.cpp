@@ -1,7 +1,6 @@
 #include "Joystick.h"
 #include "Constants.h"
 #include "Arduino.h"
-#include <stdio.h>
 
 JoystickController::JoystickController()
 {
@@ -83,9 +82,3 @@ int JoystickController::getY()
     return 0;
 }
 
-void JoystickController::debug()
-{
-    char buffer[100] = {0};
-    snprintf(buffer, 100, "<JoystickController %p> \nxPin:%d xMid:%d xVal:%d \nyPin:%d yMid:%d yVal:%d", this, xPin, xBaseline, getX(), yPin ,yBaseline, getY());
-    Serial.println(buffer);
-}

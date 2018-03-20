@@ -1,7 +1,6 @@
 #include "Arduino.h"
 #include "Motor.h"
 #include "Constants.h"
-//#include <stdio.h>
 
 MotorController::MotorController()
 {
@@ -19,20 +18,23 @@ void MotorController::write(int power)
         return;
     // write to pins
     power = constrain(power, -MAX_PWM, MAX_PWM);
-    analogWrite(powerPin, abs(power));
+    powerValue = abs(power);
+    analogWrite(powerPin, powerValue);
     // stop
     if(power == 0) {
-        digitalWrite(forwardPin, LOW);
-        digitalWrite(reversePin, LOW);
+        forwardValue = LOW;
+        reverseValue = LOW;
     // forward
     } else if(power > 0) {
-        digitalWrite(forwardPin, HIGH);
-        digitalWrite(reversePin, LOW);
+        forwardValue = HIGH;
+        reverseValue = LOW;
     // reverse
     } else {
-        digitalWrite(forwardPin, LOW);
-        digitalWrite(reversePin, HIGH);
+        forwardValue = LOW;
+        reverseValue = HIGH;
     }
+    digitalWrite(forwardPin, forwardValue);
+    digitalWrite(reversePin, reverseValue);
 }
 
 void MotorController::setPins(int power, int forward, int reverse)
@@ -43,4 +45,5 @@ void MotorController::setPins(int power, int forward, int reverse)
     powerPin = power;
     forwardPin = forward;
     reversePin = reverse;
+    powerValue = forwardValue = reverseValue = 0;
 }

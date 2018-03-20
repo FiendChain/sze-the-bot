@@ -1,9 +1,9 @@
-#include "Bot.h"  
 #include "Arduino.h"
+#include "Bot.h"  
+#include "Constants.h"
 #include "Controls.h"
 
 Bot::Bot()
-: controls(Controls())
 {
     
 }
@@ -13,11 +13,6 @@ void Bot::update()
     control();
 }
 
-void Bot::debug()
-{
-    controls.debug();
-}
-
 Controls &Bot::getControls()
 {
     return controls;
@@ -25,5 +20,7 @@ Controls &Bot::getControls()
 
 void Bot::control()
 {
+    #ifdef USE_JOYSTICK
     controls.readJoystick();
+    #endif
 }

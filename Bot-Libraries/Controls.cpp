@@ -3,9 +3,6 @@
 #include "Constants.h"
 
 Controls::Controls()
-:   leftMotor(MotorController()),   // motors
-    rightMotor(MotorController()),
-    joystick(JoystickController())
 {
     
 }
@@ -99,12 +96,5 @@ void Controls::readJoystick()
         angle = 0;
     }
     rotate(angle, magnitude);
-    
-}
-
-// debugging
-void Controls::debug()
-{
-    joystick.debug();
 }
 
