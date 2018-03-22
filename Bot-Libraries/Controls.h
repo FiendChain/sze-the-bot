@@ -1,19 +1,26 @@
- #ifndef _CONTROLS_H_
+#ifndef _CONTROLS_H_
 #define _CONTROLS_H_
 
-typedef enum {
-    LEFT, RIGHT, FORWARD, BACKWARD,
-} Direction;
+#include "Joystick.h"
+#include "Motor.h"
 
-class Controls {
+
+class Controls 
+{
     public:
         Controls();
         // motors
-        void setMotorPins(int left, int right);
-        void writeMotor(int left, int right);
-        void rotate(Direction dir);
-    private:
-        int leftMotorPin, rightMotorPin;
+        void rotate(float angle, float magnitude);
+        void setLeftMotorPins(int power, int forward, int reverse);
+        void setRightMotorPins(int power, int forward, int reverse);
+        // joystick
+        void setJoystickPins(int xPin, int yPin);
+        void readJoystick();
+        void debug();
+    private:    
+        MotorController leftMotor;
+        MotorController rightMotor; 
+        JoystickController joystick;
 };
 
 #endif
