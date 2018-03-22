@@ -47,8 +47,10 @@ void Controls::rotate(float angle, float magnitude)
         leftMotorValue = mapfloat(angle, 1.5*PI, 2*PI, -MAX_PWM, MAX_PWM);
         rightMotorValue = MAX_PWM;
     }
+    // map magnitude of motors
     leftMotorValue *= magnitude/(float)MAX_PWM;
     rightMotorValue *= magnitude/(float)MAX_PWM;
+    // write
     leftMotor.write(leftMotorValue);
     rightMotor.write(rightMotorValue);
 }
