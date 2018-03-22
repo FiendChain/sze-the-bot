@@ -24,11 +24,10 @@ void JoystickController::setPins(int _xPin, int _yPin)
     else 
         calibrateXPin(MAX_A_IN/2);
     // calibrate y
-    if(yPin != UNKNOWN_PIN) {
+    if(yPin != UNKNOWN_PIN)
         calibrateYPin(analogRead(yPin));
-    } else {
+    else 
         calibrateYPin(MAX_A_IN/2);
-    }
 }
 
 void JoystickController::calibrateXPin(int _xBaseline)
