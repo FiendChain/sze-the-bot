@@ -47,8 +47,10 @@ void Controls::rotate(float angle, float magnitude)
         leftMotorValue = mapfloat(angle, 1.5*PI, 2*PI, -MAX_PWM, MAX_PWM);
         rightMotorValue = MAX_PWM;
     }
+    // map magnitude of motors
     leftMotorValue *= magnitude/(float)MAX_PWM;
     rightMotorValue *= magnitude/(float)MAX_PWM;
+    // write
     leftMotor.write(leftMotorValue);
     rightMotor.write(rightMotorValue);
 }
@@ -61,40 +63,8 @@ void Controls::setJoystickPins(int xPin, int yPin)
 
 void Controls::readJoystick()
 {
-    // get cartesian components of joystick
-    int xVal = joystick.getX();
-    int yVal = joystick.getY();
-    // get magnitude of joystick
-    int magnitude = abs(xVal)+abs(yVal);
-    magnitude = constrain(magnitude, 0 , MAX_PWM);
-    // get angle
-    float angle = 0; 
-    // all directions except 0, PI/2, PI, 1.5PI
-    if(yVal != 0 && xVal != 0) {
-        float absRatio = abs(xVal)/(float)abs(yVal);
-        float absAngle = atan(absRatio);
-        // top right
-        if(yVal > 0 && xVal > 0)
-            angle = absAngle;
-        // bottom right
-        else if(yVal < 0 && xVal > 0)
-            angle = PI - absAngle;
-        // bottom left
-        else if(yVal < 0 && xVal < 0)
-            angle = PI + absAngle;
-        // top left
-        else if(yVal > 0 && xVal < 0)
-            angle = 2*PI - absAngle;
-    // forward and back
-    } else if(yVal != 0) {
-        angle = (yVal > 0) ? 0 : PI;
-    // left and right
-    } else if(xVal != 0) {
-        angle = (xVal > 0) ? 0.5*PI : 1.5*PI;
-    // no input
-    } else {
-        angle = 0;
-    }
+    float angle = joystick.getAngle();
+    int magnitude = joystick.getMagnitude();
     rotate(angle, magnitude);
 }
 

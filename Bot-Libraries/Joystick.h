@@ -7,8 +7,12 @@ class JoystickController {
     JoystickController(int _xPin, int _yPin);
     void setPins(int _xPin, int _yPin);
     void debug();
+    // cartesian
     int getX();
     int getY();
+    // polar
+    int getMagnitude();
+    float getAngle();
   private:
     // calibrate to a value
     void calibrateXPin(int _xBaseline);
@@ -16,13 +20,11 @@ class JoystickController {
     // x pin data
     int xPin;
     int xBaseline;
-    float xScalePositive;
-    float xScaleNegative;
+    int xScale;
     // y pin data
     int yPin;
     int yBaseline;
-    float yScalePositive;
-    float yScaleNegative;
+    int yScale;
 };
 
 #endif
