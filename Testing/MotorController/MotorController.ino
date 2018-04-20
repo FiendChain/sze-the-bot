@@ -18,6 +18,8 @@ void setup()
 {
   motor = MotorController(POWER_PIN, FORWARD_PIN, REVERSE_PIN);
   joystick = JoystickController(CONTROLLER_X, CONTROLLER_Y);
+  pinMode(CONTROLLER_X, INPUT);
+  pinMode(CONTROLLER_Y, INPUT);
   Serial.begin(9600);
 }
 
@@ -41,7 +43,7 @@ void test_controller()
 {
   int value = joystick.getX();
   char buffer[100] = {0};
-  snprintf(buffer, 100, "<controller %p> read: %d, actual: %d", motor, value, analogRead(CONTROLLER_X));
+  snprintf(buffer, 100, "<controller %p> read: %d, actual: %d", motor, value, analogRead(A0));
   motor.write(value);
   Serial.println(buffer);
   delay(10);

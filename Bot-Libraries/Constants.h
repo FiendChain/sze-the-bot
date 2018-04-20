@@ -10,8 +10,8 @@
 #define MAX_PWM 255
 #define UNKNOWN_PIN -1
 // math constants
-#define PI 3.14
+//#define PI 3.14   // defined already in Arduino.h
 // other
-#define MAX_BUFFER 100
+#define MAX_BUFFER 200
 
 #endif

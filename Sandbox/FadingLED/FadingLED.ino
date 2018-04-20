@@ -1,5 +1,3 @@
-#include <freeMemory.h>
-
 typedef enum {
   FADE_IN, FADE_OUT,
 } FadeType;
@@ -37,8 +35,7 @@ class FadingLED {
 FadingLED fadingLED;
 
 void setup() {
-  Serial.begin(9600);
-  Serial.println(freeMemory());
+  Serial.begin(9600);a
 }
 
 void loop() {

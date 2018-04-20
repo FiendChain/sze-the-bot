@@ -34,9 +34,11 @@ void JoystickController::debug()
     char buffer[MAX_BUFFER] = {0};
     snprintf(buffer, MAX_BUFFER, "<JoystickController at %p>\n", this);
     Serial.print(buffer);
-    snprintf(buffer, MAX_BUFFER, "xPin:%d xMid:%d xVal:%d\n", xPin, xBaseline, getX());
+    //snprintf(buffer, MAX_BUFFER, "xPin:%d xMid:%d xVal:%d\n", xPin, xBaseline, getX());
+    snprintf(buffer, MAX_BUFFER, "xPin: %d, xScale: %f, xBaseline: %d, xVal: %d\n", xPin, xScale, xBaseline, getX());
     Serial.print(buffer);
-    snprintf(buffer, MAX_BUFFER, "yPin:%d yMid:%d yVal:%d\n", yPin ,yBaseline, getY());
+    //snprintf(buffer, MAX_BUFFER, "yPin:%d yMid:%d yVal:%d\n", yPin ,yBaseline, getY());
+    snprintf(buffer, MAX_BUFFER, "yPin: %d, yScale: %f, yBaseline: %d, yVal: %d\n", yPin, yScale, yBaseline, getY());
     Serial.print(buffer);
 }
 

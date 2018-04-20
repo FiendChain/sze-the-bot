@@ -11,8 +11,8 @@ const int RIGHT_MOTOR_POWER = 11;
 const int RIGHT_MOTOR_FORWARD = 12;
 const int RIGHT_MOTOR_REVERSE = 13;
 // joystick
-const int JOYSTICK_X = A1;
-const int JOYSTICK_Y = A0;
+const int JOYSTICK_X = A0;
+const int JOYSTICK_Y = A1;
 
 void setup()
 {

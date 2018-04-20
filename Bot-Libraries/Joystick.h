@@ -20,11 +20,11 @@ class JoystickController {
     // x pin data
     int xPin;
     int xBaseline;
-    int xScale;
+    float xScale;
     // y pin data
     int yPin;
     int yBaseline;
-    int yScale;
+    float yScale;
 };
 
 #endif

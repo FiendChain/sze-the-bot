@@ -14,32 +14,34 @@ JoystickController::JoystickController(int _xPin, int _yPin)
 
 void JoystickController::setPins(int _xPin, int _yPin)
 {
-    pinMode(_xPin, INPUT);
-    pinMode(_yPin, INPUT);
     xPin = _xPin;
     yPin = _yPin;
     // calibrate x
-    if(xPin != UNKNOWN_PIN)
+    if(xPin != UNKNOWN_PIN) {
+        pinMode(xPin, INPUT);
         calibrateXPin(analogRead(xPin));
-    else 
-        calibrateXPin(MAX_A_IN/2);
+    } else {
+        calibrateXPin(MAX_A_IN/2.0);
+    }
     // calibrate y
-    if(yPin != UNKNOWN_PIN)
+    if(yPin != UNKNOWN_PIN) {
+        pinMode(yPin, INPUT);
         calibrateYPin(analogRead(yPin));
-    else 
-        calibrateYPin(MAX_A_IN/2);
+    } else { 
+        calibrateYPin(MAX_A_IN/2.0);
+    }
 }
 
 void JoystickController::calibrateXPin(int _xBaseline)
 {
     xBaseline = _xBaseline;
-    xScale = MAX_PWM/(float)_xBaseline;
+    xScale = MAX_PWM/(float)xBaseline;
 }
 
 void JoystickController::calibrateYPin(int _yBaseline)
 {
     yBaseline = _yBaseline;
-    yScale = MAX_PWM/(float)_yBaseline;
+    yScale = MAX_PWM/(float)yBaseline;
 }
 
 int JoystickController::getX()
