@@ -1,0 +1,2 @@
+Execute the below command in administrative mode
+mklink /d "C:\Program Files (x86)\Arduino\libraries\Bot-Libraries" "<insert folder location>sze-the-bot\Bot-Libraries"
