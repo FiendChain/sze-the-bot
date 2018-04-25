@@ -2,18 +2,19 @@
 #include "Constants.h"
 #include "Arduino.h"
 
-JoystickController::JoystickController()
-{
+JoystickController::JoystickController() {
     setPins(UNKNOWN_PIN, UNKNOWN_PIN);
 }
 
-JoystickController::JoystickController(int _xPin, int _yPin)
-{
+JoystickController::JoystickController(int _xPin, int _yPin) {
     setPins(_xPin, _yPin);
 }
 
-void JoystickController::setPins(int _xPin, int _yPin)
-{
+// set pins for the jostick
+// automatically set mode of pins to INPUT
+// calibrate for unintended voltage drop by determining baseline, and the scale factor
+// eg, if pin reads X, then max would be 2X. Then scale 0..X..2X to 0..127..255
+void JoystickController::setPins(int _xPin, int _yPin) {
     xPin = _xPin;
     yPin = _yPin;
     // calibrate x
@@ -32,20 +33,24 @@ void JoystickController::setPins(int _xPin, int _yPin)
     }
 }
 
-void JoystickController::calibrateXPin(int _xBaseline)
-{
+// set the baseline and scale factor the the xpin
+// consider MIN..CENTRE..MAX
+// if it reads _xBaseline as X, then the range of the input would be 0..X..2X
+// since we need to scale this to a better value for PWM, we need a scaling constant
+// (0..X..2X) times xScale gives (0..MAX_PWM/2..MAX_PWM)
+void JoystickController::calibrateXPin(int _xBaseline) {
     xBaseline = _xBaseline;
     xScale = MAX_PWM/(float)xBaseline;
 }
 
-void JoystickController::calibrateYPin(int _yBaseline)
-{
+// set the baseline and scale factor for the ypin
+void JoystickController::calibrateYPin(int _yBaseline) {
     yBaseline = _yBaseline;
     yScale = MAX_PWM/(float)yBaseline;
 }
 
-int JoystickController::getX()
-{
+// get the x value from 0..255(MAX_PWM)
+int JoystickController::getX() {
     if(xPin != UNKNOWN_PIN) {
         int xValue = analogRead(xPin)-xBaseline;
         xValue *= xScale;
@@ -55,8 +60,8 @@ int JoystickController::getX()
     return 0;
 }
 
-int JoystickController::getY()
-{
+// get the y value from 0..255(MAX_PWM)
+int JoystickController::getY() {
     if(yPin != UNKNOWN_PIN) {
         int yValue = analogRead(yPin)-yBaseline;
         yValue *= yScale;
@@ -66,8 +71,10 @@ int JoystickController::getY()
     return 0;
 }
 
-float JoystickController::getAngle()
-{
+// get the angle of the controller stick
+// gives a floating point value from 0 to 2*PI
+// North = 0, East = PI/2, South = PI, West = 1.5*PI, ~North = 2*PI
+float JoystickController::getAngle() {
     float angle = 0; 
     int xVal = getX();
     int yVal = getY();
@@ -100,11 +107,13 @@ float JoystickController::getAngle()
     return angle;
 }
 
-int JoystickController::getMagnitude()
-{
+// get the magnitude of the joystick
+// uses an approximation for faster reads
+// returns value from 0..255(MAX_PWM)
+int JoystickController::getMagnitude() {
     int xVal = getX();
     int yVal = getY();
     int magnitude = abs(xVal)+abs(yVal);
-    magnitude = constrain(magnitude, 0 , MAX_PWM);
+    magnitude = constrain(magnitude, MIN_PWM, MAX_PWM);
     return magnitude;
 }

@@ -1,17 +1,21 @@
 #ifndef _BOT_H_
 #define _BOT_H_
+#include "AI.h"
 #include "Controls.h" 
+#include "Sensors.h"
 
-class Bot 
-{
+class Bot {
     public:
         Bot();
         void update();
-        void debug();
         Controls &getControls();
+        Sensors &getSensors();
+        void debug();
     private:
-        void control();
+        AI ai;
         Controls controls;
+        Sensors sensors;
+        void control();
 };
 
 #endif

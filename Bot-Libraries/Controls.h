@@ -4,12 +4,15 @@
 #include "Joystick.h"
 #include "Motor.h"
 
+typedef enum {
+    FORWARD, BACKWARD, LEFT, RIGHT, STOP
+} Movement;
 
-class Controls 
-{
+class Controls {
     public:
         Controls();
         // motors
+        void move(Movement move);   
         void rotate(float angle, float magnitude);
         void setLeftMotorPins(int power, int forward, int reverse);
         void setRightMotorPins(int power, int forward, int reverse);

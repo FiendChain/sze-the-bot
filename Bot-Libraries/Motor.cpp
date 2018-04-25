@@ -1,21 +1,25 @@
-#include "Arduino.h"
+#include "Arduino.h"  
 #include "Motor.h"
 #include "Constants.h"
 
-MotorController::MotorController()
-{
+MotorController::MotorController() {
     setPins(UNKNOWN_PIN, UNKNOWN_PIN, UNKNOWN_PIN);
 }
 
-MotorController::MotorController(int power, int forward, int reverse)
-{
-    setPins(power, forward, reverse);
+MotorController::MotorController(int _powerPin, int _forwardPin, int _reversePin) {
+    setPins(_powerPin, _forwardPin, _reversePin);
 }
 
-void MotorController::write(int power)
-{
-    if(powerPin == UNKNOWN_PIN || forwardPin == UNKNOWN_PIN || reversePin == UNKNOWN_PIN)
+// given a value from -255 to 255(MAX_PWM) move the motor
+// the motor is controller through 3 pins: forward, reverse, power
+// forward: LOW, HIGH => If HIGH make motor go forward
+// reverse: LOW, HIGH => If HIGH make motor go reverse
+// power: 0..255 => Determines how fast the motor goes
+// only forward or reverse can be on exclusively
+void MotorController::write(int power) {
+    if(powerPin == UNKNOWN_PIN || forwardPin == UNKNOWN_PIN || reversePin == UNKNOWN_PIN) {
         return;
+    }
     // write to pins
     power = constrain(power, -MAX_PWM, MAX_PWM);
     powerValue = abs(power);
@@ -37,13 +41,16 @@ void MotorController::write(int power)
     digitalWrite(reversePin, reverseValue);
 }
 
-void MotorController::setPins(int power, int forward, int reverse)
-{
-    pinMode(power, OUTPUT);
-    pinMode(forward, OUTPUT);
-    pinMode(reverse, OUTPUT);
-    powerPin = power;
-    forwardPin = forward;
-    reversePin = reverse;
+// set the pins and autoconfigure their pin mode
+void MotorController::setPins(int _powerPin, int _forwardPin, int _reversePin) {
+    powerPin = _powerPin;
+    forwardPin = _forwardPin;
+    reversePin = _reversePin;
     powerValue = forwardValue = reverseValue = 0;
+    // only set pin mode if valid
+    if(powerPin != UNKNOWN_PIN && forwardPin != UNKNOWN_PIN && reversePin != UNKNOWN_PIN) {
+        pinMode(powerPin, OUTPUT);
+        pinMode(forwardPin, OUTPUT);
+        pinMode(reversePin, OUTPUT);
+    }
 }

@@ -4,14 +4,14 @@
 #include "Controls.h"
 #include "Joystick.h"
 #include "Motor.h" 
+#include "Distance.h"
 
 #ifdef DEBUGGING
 #include <stdio.h>      // used for making debug strings
 #include "freeMemory.h" // used for checking total free memory
 
 // debug bot
-void Bot::debug()
-{
+void Bot::debug() {
     char buffer[MAX_BUFFER] = {0};
     snprintf(buffer, MAX_BUFFER, "<< Debugging Bot at %p", this);
     Serial.println(buffer);
@@ -21,16 +21,14 @@ void Bot::debug()
 }
 
 // debug controls
-void Controls::debug()
-{
+void Controls::debug() {
     joystick.debug();
     leftMotor.debug();
     rightMotor.debug();
 }
 
 // debug joystick
-void JoystickController::debug()
-{
+void JoystickController::debug() {
     char buffer[MAX_BUFFER] = {0};
     snprintf(buffer, MAX_BUFFER, "<JoystickController at %p>\n", this);
     Serial.print(buffer);
@@ -43,8 +41,7 @@ void JoystickController::debug()
 }
 
 // debug motor
-void MotorController::debug()
-{
+void MotorController::debug() {
     char buffer[MAX_BUFFER] = {0};
     snprintf(buffer, MAX_BUFFER, "<MotorController at %p>\n", this);
     Serial.print(buffer);
@@ -53,10 +50,13 @@ void MotorController::debug()
     snprintf(buffer, MAX_BUFFER, "powerVal:%d forwardVal:%d reverseVal:%d\n", powerValue, forwardValue, reverseValue);
     Serial.print(buffer);
 }
-#else
-// dont do anything
-void Bot::debug() {}
-void Controls::debug() {}
-void JoystickController::debug() {}
-void MotorController::debug() {}
+
+// debug distance sensor
+void DistanceSensor::debug() {
+    char buffer[MAX_BUFFER] = {0};
+    snprintf(buffer, MAX_BUFFER, "<DistanceSensor at %p>\n", this);
+    Serial.print(buffer);
+    snprintf(buffer, MAX_BUFFER, "echoPin:%d triggerPin:%d distance:%.02fcm\n", echoPin, triggerPin, read());
+    Serial.print(buffer);
+}
 #endif
