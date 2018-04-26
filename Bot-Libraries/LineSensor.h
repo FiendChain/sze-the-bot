@@ -7,6 +7,7 @@ class LineSensor {
         LineSensor(int _readPin);
         void setPin(int _readPin);
         int read();
+        void debug();
     private:
         int readPin;
 };

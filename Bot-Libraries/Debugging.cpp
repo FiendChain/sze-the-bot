@@ -1,30 +1,34 @@
 #include "Arduino.h"
 #include "Bot.h"
 #include "Constants.h"
-#include "Controls.h"
 #include "Joystick.h"
 #include "Motor.h" 
 #include "Distance.h"
+#include "LineSensor.h"
 
 #ifdef DEBUGGING
+#warning Debugging uses alot of memory
 #include <stdio.h>      // used for making debug strings
 #include "freeMemory.h" // used for checking total free memory
 
 // debug bot
 void Bot::debug() {
     char buffer[MAX_BUFFER] = {0};
-    snprintf(buffer, MAX_BUFFER, "<< Debugging Bot at %p", this);
+    snprintf(buffer, MAX_BUFFER, "<< Debugging Bot at %p >>", this);
     Serial.println(buffer);
-    controls.debug();
+    // motors
+    Serial.println("(Left motor)");
+    leftMotor.debug();
+    Serial.println("(Right motor)");
+    rightMotor.debug();
+    // joystick
+    joystick.debug();
+    // distance
+    distanceSensor.debug();
+    // line
+    lineSensor.debug();
     snprintf(buffer, MAX_BUFFER, "Total free memory: %u bytes\n", freeMemory());
     Serial.println(buffer);
-}
-
-// debug controls
-void Controls::debug() {
-    joystick.debug();
-    leftMotor.debug();
-    rightMotor.debug();
 }
 
 // debug joystick
@@ -59,4 +63,20 @@ void DistanceSensor::debug() {
     snprintf(buffer, MAX_BUFFER, "echoPin:%d triggerPin:%d distance:%.02fcm\n", echoPin, triggerPin, read());
     Serial.print(buffer);
 }
+
+// debug line sensor
+void LineSensor::debug() {
+    char buffer[MAX_BUFFER] = {0};
+    snprintf(buffer, MAX_BUFFER, "<LineSensor at %p>\n", this);
+    Serial.print(buffer);
+    snprintf(buffer, MAX_BUFFER, "Status: %d\n", read());
+    Serial.print(buffer);
+}
+#else
+#warning Debugging disabled
+void Bot::debug() {}
+void JoystickController::debug() {}
+void MotorController::debug() {}
+void DistanceSensor::debug() {}
+void LineSensor::debug() {}
 #endif

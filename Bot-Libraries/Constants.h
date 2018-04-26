@@ -3,6 +3,8 @@
 
 // debugging constant
 // #define DEBUGGING 
+// control constants
+#define CONTROL_TYPE 1  // 0 = Joystick, 1 = AI
 // pin values
 #define MAX_A_IN 1024   // analog input range
 #define MIN_A_IN 0  

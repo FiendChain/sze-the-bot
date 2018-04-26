@@ -11,29 +11,21 @@ void Bot::update() {
     control();
 }
 
-// return reference to the bot's controls
-// use this to configure the controller class for pins
-Controls &Bot::getControls() {
-    return controls;
-}
-
-// return reference to bot's sensors
-// use this to configure the sensor pins
-Sensors &Bot::getSensors() {
-    return sensors;
-}
-
 // control the bot
 // JOYSTICK = read joystick
 // AI = update sensor, pass sensor data to AI, get AI output to controls
 void Bot::control() {
-    // control via joystick
-    // controls.readJoystick();
-
-    // simple ai
-    float distance = sensors.getDistance();
-    int isInside = sensors.checkInside();
+    #if CONTROL_TYPE == 0
+    float angle = joystick.getAngle();
+    int magnitude = joystick.getMagnitude();
+    rotate(angle, magnitude);
+    #elif CONTROL_TYPE == 1
+    float distance = distanceSensor.read();
+    int isInside = lineSensor.read();
     ai.update(distance, isInside); 
-    Movement move = ai.getMove();
-    controls.move(move);
+    Movement moveType = ai.getMove();
+    move(moveType); 
+    #else
+    #warning No movement type for bot was chosen
+    #endif
 }

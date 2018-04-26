@@ -1,10 +1,6 @@
-#include "Controls.h"
+#include "Bot.h"
 #include "Arduino.h"
 #include "Constants.h"
-
-Controls::Controls() {
-    
-}
 
 // float mapping
 float mapfloat(float x, float in_min, float in_max, float out_min, float out_max) {
@@ -12,23 +8,23 @@ float mapfloat(float x, float in_min, float in_max, float out_min, float out_max
 }
 
 // set the left motor pins
-void Controls::setLeftMotorPins(int power, int forward, int reverse) {
+void Bot::setLeftMotorPins(int power, int forward, int reverse) {
     leftMotor.setPins(power, forward, reverse);
 }
 
 // set the right motor pins
-void Controls::setRightMotorPins(int power, int forward, int reverse) {
+void Bot::setRightMotorPins(int power, int forward, int reverse) {
     rightMotor.setPins(power, forward, reverse);
 }
 
 // move the bot in four axises, and stop
 // forward, backward, left, right, stop
-// uses the <Movement> enumeration in Controls.h
-void Controls::move(Movement move) {
+// uses the <Movement> enumeration in Bot.h
+void Bot::move(Movement moveType) { 
     int leftMotorValue = MIN_PWM;
     int rightMotorValue = MIN_PWM;
     // get the movement type
-    switch(move) {
+    switch(moveType) {
     case FORWARD: 
         leftMotorValue = MAX_PWM;
         rightMotorValue = MAX_PWM;
@@ -60,7 +56,7 @@ void Controls::move(Movement move) {
 // magnitude specifies how fast to move in that direction
 // magnitude goes from 0(MIN_PWM) to 255(MAX_PWM)
 // consider the angle and magnitude parameters as a vector, which determines the direction of the bot
-void Controls::rotate(float angle, float magnitude) {
+void Bot::rotate(float angle, float magnitude) {
     // constraining angle
     angle = constrain(angle, 0, 2*PI);
     magnitude = constrain(magnitude, MIN_PWM, MAX_PWM);
@@ -92,14 +88,7 @@ void Controls::rotate(float angle, float magnitude) {
 }
 
 // set joystick pins
-void Controls::setJoystickPins(int xPin, int yPin) {
+void Bot::setJoystickPins(int xPin, int yPin) {
     joystick.setPins(xPin, yPin);
-}
-
-// control the bot using the joystick controls
-void Controls::readJoystick() {
-    float angle = joystick.getAngle();
-    int magnitude = joystick.getMagnitude();
-    rotate(angle, magnitude);
 }
 
