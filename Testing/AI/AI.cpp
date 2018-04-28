@@ -1,4 +1,5 @@
 #include "AI.h"
+
 // default initialisation
 AI::AI() {
     distance = 0;
@@ -7,15 +8,15 @@ AI::AI() {
 };
 
 // update the bot parameters
-void AI::update(float _distance, int _isInside) {
+void AI::update(float dt, float _distance, int _isInside) {
     distance = _distance;
     isInside = _isInside;
-    currentTime++;
+    currentTime += dt*1000;
 }
 
 // get the move from the bot
 Movement AI::getMove() {
-    if(distance < 5) {
+    if(distance < 100) {
         return LEFT;
     } else {
         return FORWARD;

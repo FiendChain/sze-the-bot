@@ -1,5 +1,5 @@
-#include "Arduino.h"
 #include "AI.h"
+#include "Arduino.h"
 #include "Constants.h"
 
 // default initialisation

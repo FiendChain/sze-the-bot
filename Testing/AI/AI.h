@@ -6,12 +6,12 @@
 class AI {
     public:
         AI();
-        void update(float _distance, int _isInside);
+        void update(float dt, float _distance, int _isInside);
         Movement getMove();
     private:
         float distance;
         int isInside;
-        long long currentTime;
+        float currentTime;  // milliseconds
 };
 
 #endif
