@@ -46,11 +46,11 @@ void Simulation::update() {
 // render all items
 void Simulation::render() {
     window.clear(sf::Color::Black);
-    for(Bot &b: bots) {
-        b.render(window);
-    }
     for(Entity &e: objects) {
         e.render(window);
+    }
+    for(Bot &b: bots) {
+        b.render(window);
     }
     showTelemetry();
     window.display();
@@ -67,7 +67,8 @@ void Simulation::pollEvents() {
             const float timescaleIter = 0.1;
             switch(event.key.code) {
             case sf::Keyboard::Left:
-                if(timescale > timescaleIter) timescale -= timescaleIter;
+                if(timescale > 0) timescale -= timescaleIter;
+                if(timescale < 0) timescale = 0;
                 dt = timescale/(float)fps;
                 break;
             case sf::Keyboard::Right:
@@ -82,7 +83,7 @@ void Simulation::pollEvents() {
 // add an obstacle
 void Simulation::addObstacle(float size, float x, float y) {
     Entity e(size, x, y);
-    e.setColor(sf::Color::White);
+    e.setColor(sf::Color::Red);
     objects.push_back(e);
 }
 

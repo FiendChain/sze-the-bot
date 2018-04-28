@@ -13,13 +13,18 @@ Bot::Bot()
 
 Bot::Bot(float size, float x, float y)
 :   body(size, x, y),
-    distanceSensor(M_PI/4.0f, 300, 101)
+    distanceSensor(M_PI/3.0f, 300, 201)
 {
     // init bot param
     body.setColor(sf::Color::Green);
     botSpeed = 50;
     botAngle = 0;
     turnRate = M_PI/4.0f;
+}
+
+// get body for collision checking
+Entity &Bot::getBody() {
+    return body;
 }
 
 // bot setters
@@ -51,19 +56,19 @@ void Bot::update(float dt, std::vector<Entity> &objects) {
 void Bot::move(Movement move, float dt) {
     switch(move) {
     case FORWARD:
-        body.setVelocity(botSpeed*sin(botAngle), botSpeed*cos(botAngle));
+        body.setVelocity(-botSpeed*sin(botAngle), botSpeed*cos(botAngle));
         break;
     case BACKWARD:
-        body.setVelocity(-botSpeed*sin(botAngle), -botSpeed*cos(botAngle));
+        body.setVelocity(botSpeed*sin(botAngle), -botSpeed*cos(botAngle));
         break;
     case LEFT:
         body.setVelocity(0, 0);
-        botAngle += turnRate*dt;
+        botAngle -= turnRate*dt;    // invert direction to turn, since y-axis is inverted on display
         botAngle = constrainAngle(botAngle);
         break;
     case RIGHT:
         body.setVelocity(0, 0);
-        botAngle -= turnRate*dt;
+        botAngle += turnRate*dt;
         botAngle = constrainAngle(botAngle);
         break;
     case STOP:

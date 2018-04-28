@@ -13,6 +13,8 @@ class Bot: Entity {
     public:
         Bot();
         Bot(float size, float x, float y);
+        // get reference to body for analysis
+        Entity &getBody();
         // set bot specifications
         void setSpeed(float speed);
         void setAngle(float angle);

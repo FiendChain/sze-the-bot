@@ -21,6 +21,9 @@ class DistanceSensor {
         std::vector<sf::Vertex> fov;
         int checkAngle(float angle, Entity &object);
         float readAngle(float angle, std::vector<Entity> &objects);
+        float getDistanceEntity(float angle, Entity &e);
+        float getVerticalDistance(Entity &e);
+        float getNonVerticalDistance(float m, float b, Entity &e);
 };
 
 #endif

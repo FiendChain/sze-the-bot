@@ -47,7 +47,7 @@ float DistanceSensor::getDistance(float angle, std::vector<Entity> &objects) {
             if(distance < closestDistance) {
                 closestDistance = distance;
             }
-            v.position.x = distance * sin(currAngle) + position.x;
+            v.position.x = -(distance * sin(currAngle)) + position.x;
             v.position.y = distance * cos(currAngle) + position.y;
             currAngle -= increment;
         }
@@ -66,7 +66,7 @@ void DistanceSensor::render(sf::RenderWindow &window) {
 // return 0 to prevent detection of objects behind the scanline's direction
 int DistanceSensor::checkAngle(float angle, Entity &object) {
     sf::Vector2f diffPos = object.getPosition()-position;
-    float angleDiff = getAngle(-diffPos.x, diffPos.y);
+    float angleDiff = getAngle(diffPos.x, diffPos.y);
     float absAngleDiff = absFloat(angle-angleDiff);
     if(absAngleDiff >= M_PI/2.0f && absAngleDiff <= 1.5*M_PI) {
         return 0;
@@ -77,79 +77,88 @@ int DistanceSensor::checkAngle(float angle, Entity &object) {
 // gets nearest distance, at a particular angle
 float DistanceSensor::readAngle(float angle, std::vector<Entity> &objects) {
     float closestDistance = maxRange;
-    // for vertical, get y intercept
-    // circle is (x-xo)^2 + (y-y0)^2 = r^2
-    // for y int:
-    // (y-y0)^2 = r^2 - (x-x0)^2
-    // y = -+sqrt(r^2 - (x-x0)^2) + y0
-    // distance = |ycurr - y|
-    const float angleRange = 0.005;
-    if((angle <= angleRange && angle >= -angleRange) || (angle <= M_PI+angleRange && angle >= M_PI-angleRange)) {
-        for(Entity &e: objects) {
-            if(!checkAngle(angle, e)) continue;
-            sf::Vector2f ePos = e.getPosition();
-            float R = e.getSize();
-            // check if x could intercept
-            if(position.x < ePos.x-R || position.x > ePos.y+R) continue;
-            // if intercept is possible, compute
-            float A = pow(R,2) - pow(position.x-ePos.x,2);
-            float A_sqrt = pow(A, 0.5f);
-            // get distance A
-            float yInt_Pos = A_sqrt + ePos.y;
-            float dist_A = absFloat(position.y-yInt_Pos);
-            // get distance B
-            float yInt_Neg = -A_sqrt + ePos.y;
-            float dist_B = absFloat(position.y-yInt_Neg);
-            // fetch smallest distance
-            float distance = (dist_A < dist_B) ? dist_A : dist_B;
-            if(distance < closestDistance) {
-                closestDistance = distance;
-            }
-        }
-    // for other get equ of line first
-    // y = mx+b
-    // m = tan(angle - PI/2)
-    // since b = y-mx, sub y and x
-    // then check if there is intercept with circle equation
-    // sub in y = mx+b into (x-xo)^2 + (y-y0)^2 = r^2:
-    // expanding, x^2(m^2+1) + x(-2x0 + 2km) + (x0^2+k^2-r^2) = 0, where k = b-y0
-    // check the discriminant if there is intercept, then solve
-    // x_intercept = (-b + delta) / 2a = (-(-2x0+2km)) 
-    } else {
-        // get line equation
-        float m = tan(-angle-(M_PI/2.0f));
-        float b = position.y-m*position.x;
-        // check each circle
-        for(Entity &e: objects) {
-            if(!checkAngle(angle, e)) continue;
-            sf::Vector2f ePos = e.getPosition();
-            float R = e.getSize();
-            // check if intercept: delta = b^2 - 4ac = (-2x0+2km)^2 - 4(m^2+1)(x0^2+k^2-r^2)
-            // get  x^2(m^2+1) + x(-2x0 + 2km) + (x0^2+k^2-r^2) = 0, where k = b-y0 into Ax^2 + Bx^2 + C = 0
-            float k = b-ePos.y;
-            float A = pow(m,2) + 1;
-            float B = -2*ePos.x + 2*k*m;
-            float C = pow(ePos.x,2) + pow(k,2) - pow(R,2);
-            float delta = pow(B,2) - 4*A*C;
-            if(delta < 0) continue;   // no intercept
-            float delta_sqrt = pow(delta,0.5f);
-            // get distance A
-            float x_int_A = (-B-delta_sqrt)/(2.0f*A);
-            float y_int_A = m*x_int_A + b;
-            float distanceA_squared = pow(position.x-x_int_A,2) + pow(position.y-y_int_A,2);
-            float distanceA = pow(distanceA_squared,0.5f);
-            // get distance B
-            float x_int_B = (-B+delta_sqrt)/(2.0f*A);
-            float y_int_B = m*x_int_A + b;
-            float distanceB_squared = pow(position.x-x_int_B,2) + pow(position.y-y_int_B,2);
-            float distanceB = pow(distanceB_squared,0.5f);
-            // get cloest distance
-            float distance = (distanceA < distanceB) ? distanceA : distanceB;
-            if(distance < closestDistance) {
-                closestDistance = distance;
-            }
+    for(Entity &e: objects) {
+        float distance = getDistanceEntity(angle, e);
+        if(distance < closestDistance && distance >= e.getSize()) {
+            closestDistance = distance;
         }
     }
-    
     return closestDistance;
 }
+
+float DistanceSensor::getDistanceEntity(float angle, Entity &e) {
+    float distance = maxRange;
+    if(!checkAngle(angle, e)) return distance; // ignore if entity not within angular range
+    const float angleRange = 0.05;
+    if((angle <= angleRange && angle >= -angleRange) || (angle <= M_PI+angleRange && angle >= M_PI-angleRange)) {
+        distance = getVerticalDistance(e);
+    } else {
+        // get line equation
+        float m = tan(angle+(M_PI/2.0f));
+        float b = position.y-(m*position.x);
+        distance = getNonVerticalDistance(m, b, e);
+    }
+    return distance;
+}
+
+// for vertical, get y intercept
+// circle is (x-xo)^2 + (y-y0)^2 = r^2
+// for y int:
+// (y-y0)^2 = r^2 - (x-x0)^2
+// y = -+sqrt(r^2 - (x-x0)^2) + y0
+// distance = |ycurr - y|
+float DistanceSensor::getVerticalDistance(Entity &e) {
+    float distance = maxRange;
+    sf::Vector2f ePos = e.getPosition();
+    float R = e.getSize();
+    // if intercept is possible, compute
+    float A = pow(R,2) - pow(position.x-ePos.x,2);
+    if(A < 0) return distance; // out of range
+    float A_sqrt = pow(A, 0.5f);
+    // get distance A
+    float yInt_Pos = A_sqrt + ePos.y;
+    float dist_A = absFloat(position.y-yInt_Pos);
+    // get distance B
+    float yInt_Neg = -A_sqrt + ePos.y;
+    float dist_B = absFloat(position.y-yInt_Neg);
+    // fetch smallest distance
+    distance = (dist_A < dist_B) ? dist_A : dist_B;
+    return distance;
+}
+
+// for other get equ of line first
+// y = mx+b
+// m = tan(angle+PI/2)
+// since b = y-mx, sub y and x
+// then check if there is intercept with circle equation
+// sub in y = mx+b into (x-xo)^2 + (y-y0)^2 = r^2:
+// expanding, x^2(m^2+1) + x(-2x0 + 2km) + (x0^2+k^2-r^2) = 0, where k = b-y0
+// check the discriminant if there is intercept, then solve
+// x_intercept = (-b + delta) / 2a = (-(-2x0+2km)) 
+float DistanceSensor::getNonVerticalDistance(float m, float b, Entity &e) {
+    float distance = maxRange;
+    sf::Vector2f ePos = e.getPosition();
+    float R = e.getSize();
+    float k = b-ePos.y;
+    float A = pow(m,2) + 1;
+    float B = -2*ePos.x + 2*k*m;
+    float C = pow(ePos.x,2) + pow(k,2) - pow(R,2);
+    // check if intercept: delta = b^2 - 4ac = (-2x0+2km)^2 - 4(m^2+1)(x0^2+k^2-r^2)
+    // get  x^2(m^2+1) + x(-2x0 + 2km) + (x0^2+k^2-r^2) = 0, where k = b-y0 into Ax^2 + Bx^2 + C = 0
+    float delta = pow(B,2) - 4*A*C;
+    if(delta < 0) return distance;   // no intercept
+    float delta_sqrt = pow(delta,0.5f);
+    // get distance A
+    float x_int_A = (-B-delta_sqrt)/(2.0f*A);
+    float y_int_A = m*x_int_A + b;
+    float distanceA_squared = pow(position.x-x_int_A,2) + pow(position.y-y_int_A,2);
+    float distanceA = pow(distanceA_squared,0.5f);
+    // get distance B
+    float x_int_B = (-B+delta_sqrt)/(2.0f*A);
+    float y_int_B = m*x_int_B + b;
+    float distanceB_squared = pow(position.x-x_int_B,2) + pow(position.y-y_int_B,2);
+    float distanceB = pow(distanceB_squared,0.5f);
+    // get cloest distance
+    distance = (distanceA < distanceB) ? distanceA : distanceB;
+    return distance;
+} 
