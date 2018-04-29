@@ -11,10 +11,9 @@ class Simulation {
         Simulation(int width, int height, int fps, const char *name);
         int run();
         void addObstacle(float size, float x, float y);
-        void addBot(float size, float x, float y, float angle);
+        void addBot(Bot &bot);
     private:
-        // objects
-        Bot bot;
+        // simulation entities
         std::vector<Entity> objects;
         std::vector<Bot> bots;
         // rendering

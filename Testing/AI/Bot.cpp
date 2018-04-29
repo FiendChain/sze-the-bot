@@ -1,30 +1,18 @@
 #include "Bot.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
-
-Bot::Bot()
-:   body(0, 0, 0),
-    distanceSensor(0, 0, 0)
-{
-    botSpeed = 0;
-    botAngle = 0;
-    turnRate = 0;
-}
+#include "Angles.h"
 
 Bot::Bot(float size, float x, float y)
-:   body(size, x, y),
-    distanceSensor(M_PI/3.0f, 300, 201)
 {
     // init bot param
-    body.setColor(sf::Color::Green);
+    setSize(size);
+    setPosition(x, y);
+    setFillColor(sf::Color::Green);
+    currentMove = STOP;
     botSpeed = 50;
     botAngle = 0;
     turnRate = M_PI/4.0f;
-}
-
-// get body for collision checking
-Entity &Bot::getBody() {
-    return body;
 }
 
 // bot setters
@@ -36,54 +24,68 @@ void Bot::setSpeed(float speed) {
     botSpeed = speed;
 }
 
+void Bot::setAI(Movement (*funcPtr)(AI &)) {
+    ai.setFunctionPointer(funcPtr);
+}
+
 // render the bot
-void Bot::render(sf::RenderWindow &window) {
-    body.render(window);
-    distanceSensor.render(window);
+void Bot::renderFOV(sf::RenderWindow &window) {
+    for(auto &sensor: distanceSensors) {
+        sensor.render(window);
+    }
+}
+
+// update the fov
+void Bot::updateFOV(std::vector<Entity> &objects) {
+    for(auto &sensor: distanceSensors) {
+        sensor.update(getPosition(), botAngle, objects);
+    }
 }
 
 // update the bot
-void Bot::update(float dt, std::vector<Entity> &objects) {
-    distanceSensor.setPosition(body.getPosition());
-    float distance = distanceSensor.getDistance(botAngle, objects);
-    ai.update(dt, distance, 1);
-    Movement moveType = ai.getMove();
-    move(moveType, dt);
-    body.update(dt);
+void Bot::update(float dt) {
+    std::vector<float> distances;
+    for(auto &sensor: distanceSensors) {
+        distances.push_back(sensor.getLastDistance());
+    }
+    ai.update(dt, distances, 1);
+    currentMove = ai.getMove();
+    move(dt);
+    setPosition(getPosition() + getVelocity()*dt);
+}
+
+void Bot::render(sf::RenderWindow &window) {
+    window.draw(*this);
+    renderFOV(window);
 }
 
 // move the bot
-void Bot::move(Movement move, float dt) {
-    switch(move) {
+void Bot::move(float dt) {
+    switch(currentMove) {
     case FORWARD:
-        body.setVelocity(-botSpeed*sin(botAngle), botSpeed*cos(botAngle));
+        setVelocity(-botSpeed*sin(botAngle), botSpeed*cos(botAngle));
         break;
     case BACKWARD:
-        body.setVelocity(botSpeed*sin(botAngle), -botSpeed*cos(botAngle));
+        setVelocity(botSpeed*sin(botAngle), -botSpeed*cos(botAngle));
         break;
     case LEFT:
-        body.setVelocity(0, 0);
+        setVelocity(0, 0);
         botAngle -= turnRate*dt;    // invert direction to turn, since y-axis is inverted on display
         botAngle = constrainAngle(botAngle);
         break;
     case RIGHT:
-        body.setVelocity(0, 0);
+        setVelocity(0, 0);
         botAngle += turnRate*dt;
         botAngle = constrainAngle(botAngle);
         break;
     case STOP:
-        body.setVelocity(0, 0);
+        setVelocity(0, 0);
         break;
     }
 }
 
-// constrain angle between -Pi(right) and PI(left)
-float Bot::constrainAngle(float angle) {
-    while(angle > M_PI) {
-        angle -= 2*M_PI;
-    }
-    while(angle < -M_PI) {
-        angle += 2*M_PI;
-    }
-    return angle;
+// add distance sensors to the bot
+void Bot::addDistanceSensor(float offsetDistance, float angle, float maxRange, float fovRange, float precision) {
+    BotDistanceSensor distanceSensor(offsetDistance, angle, maxRange, fovRange, precision);
+    distanceSensors.push_back(distanceSensor);
 }

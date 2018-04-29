@@ -43,7 +43,7 @@ float DistanceSensor::getDistance(float angle, std::vector<Entity> &objects) {
         if(i == 0 || i == size-1) {
             v.position = position;
         } else {
-            float distance = readAngle(currAngle, objects);
+            float distance = readAngle(constrainAngle(currAngle), objects);
             if(distance < closestDistance) {
                 closestDistance = distance;
             }
@@ -78,8 +78,15 @@ int DistanceSensor::checkAngle(float angle, Entity &object) {
 float DistanceSensor::readAngle(float angle, std::vector<Entity> &objects) {
     float closestDistance = maxRange;
     for(Entity &e: objects) {
+         // ignore if sensor is inside entity
+        sf::Vector2f posDiff = position-e.getPosition();
+        float R = e.getSize();
+        if(absFloat(posDiff.x) < R && absFloat(posDiff.y) < R) {
+            continue;
+        }
+        // otherwise try to get distance
         float distance = getDistanceEntity(angle, e);
-        if(distance < closestDistance && distance >= e.getSize()) {
+        if(distance < closestDistance) {
             closestDistance = distance;
         }
     }
@@ -88,7 +95,9 @@ float DistanceSensor::readAngle(float angle, std::vector<Entity> &objects) {
 
 float DistanceSensor::getDistanceEntity(float angle, Entity &e) {
     float distance = maxRange;
-    if(!checkAngle(angle, e)) return distance; // ignore if entity not within angular range
+    // ignore if entity not within angular range
+    if(!checkAngle(angle, e)) return distance; 
+    // get distance
     const float angleRange = 0.05;
     if((angle <= angleRange && angle >= -angleRange) || (angle <= M_PI+angleRange && angle >= M_PI-angleRange)) {
         distance = getVerticalDistance(e);

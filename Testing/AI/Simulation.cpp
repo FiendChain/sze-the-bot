@@ -2,11 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#define _USE_MATH_DEFINES
+#include <math.h>
 
 Simulation::Simulation(int width, int height, int fps, const char *name)
-:   window(sf::VideoMode(width, height), name),
-    bots(0),
-    objects(0)
+:   window(sf::VideoMode(width, height), name)
 {
     // physics
     this->fps = fps;
@@ -33,23 +33,29 @@ int Simulation::run() {
 
 // update simulation
 void Simulation::update() {
-    for(Bot &b: bots) {
-        b.update(dt, objects);
-    }
-    for(Entity &e: objects) {
-        e.update(dt);
-    }
     currentTime += dt;
+    std::vector<Entity> obstacles;
+    for(auto &e: objects) {
+        e.update(dt);
+        obstacles.push_back(e);
+    }
+    for(auto &b: bots) {
+        obstacles.push_back(b);
+    }
+    for(auto &b: bots) {
+        b.update(dt);
+        b.updateFOV(obstacles);
+    }
 }
 
 
 // render all items
 void Simulation::render() {
     window.clear(sf::Color::Black);
-    for(Entity &e: objects) {
+    for(auto &e: objects) {
         e.render(window);
     }
-    for(Bot &b: bots) {
+    for(auto &b: bots) {
         b.render(window);
     }
     showTelemetry();
@@ -83,14 +89,12 @@ void Simulation::pollEvents() {
 // add an obstacle
 void Simulation::addObstacle(float size, float x, float y) {
     Entity e(size, x, y);
-    e.setColor(sf::Color::Red);
+    e.setFillColor(sf::Color::Red);
     objects.push_back(e);
 }
 
-void Simulation::addBot(float size, float x, float y, float angle) {
-    Bot b(size, x, y);
-    b.setAngle(angle);
-    bots.push_back(b);
+void Simulation::addBot(Bot &bot) {
+    bots.push_back(bot);
 }
 
 // show telemetry
