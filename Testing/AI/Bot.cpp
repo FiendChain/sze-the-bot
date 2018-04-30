@@ -28,7 +28,7 @@ void Bot::setAI(Movement (*funcPtr)(AI &)) {
     ai.setFunctionPointer(funcPtr);
 }
 
-// render the bot
+// render the bot's fov
 void Bot::renderFOV(sf::RenderWindow &window) {
     for(auto &sensor: distanceSensors) {
         sensor.render(window);
@@ -42,13 +42,31 @@ void Bot::updateFOV(std::vector<Entity> &objects) {
     }
 }
 
+// render the bot's line checker
+void Bot::renderLineSensor(sf::RenderWindow &window) {
+    for(auto &sensor: lineSensors) {
+        sensor.render(window);
+    }
+}
+
+// update the bot's line checker sensors
+void Bot::updateLineSensor(std::vector<Entity> &floors) {
+    for(auto &sensor: lineSensors) {
+        sensor.update(getPosition(), botAngle, floors);
+    }
+}
+
 // update the bot
 void Bot::update(float dt) {
     std::vector<float> distances;
     for(auto &sensor: distanceSensors) {
         distances.push_back(sensor.getLastDistance());
     }
-    ai.update(dt, distances, 1);
+    std::vector<int> lineChecks;
+    for(auto &sensor: lineSensors) {
+        lineChecks.push_back(sensor.getLastCheck());
+    }
+    ai.update(dt, distances, lineChecks);
     currentMove = ai.getMove();
     move(dt);
     setPosition(getPosition() + getVelocity()*dt);
@@ -57,6 +75,7 @@ void Bot::update(float dt) {
 void Bot::render(sf::RenderWindow &window) {
     window.draw(*this);
     renderFOV(window);
+    renderLineSensor(window);
 }
 
 // move the bot
@@ -86,6 +105,14 @@ void Bot::move(float dt) {
 
 // add distance sensors to the bot
 void Bot::addDistanceSensor(float offsetDistance, float angle, float maxRange, float fovRange, float precision) {
-    BotDistanceSensor distanceSensor(offsetDistance, angle, maxRange, fovRange, precision);
+    BotDistanceSensor distanceSensor(maxRange, fovRange, precision);
+    distanceSensor.setOffset(offsetDistance, angle);
     distanceSensors.push_back(distanceSensor);
+}
+
+// add line sensor
+void Bot::addLineSensor(float offsetDistance, float angle, float range) {
+    BotLineSensor lineSensor(range); 
+    lineSensor.setOffset(offsetDistance, angle);
+    lineSensors.push_back(lineSensor);
 }

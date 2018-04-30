@@ -14,11 +14,13 @@ class DistanceSensor {
         float getDistance(float angle, std::vector<Entity> &objects);
         void render(sf::RenderWindow &window);
     private:
-        const float fovAngle;   // distance sensor params
+        // distance sensor params
+        const float fovAngle;   
         const float fovPoints;
         const float maxRange;
         sf::Vector2f position;
         std::vector<sf::Vertex> fov;
+        // get distance methods
         int checkAngle(float angle, Entity &object);
         float readAngle(float angle, std::vector<Entity> &objects);
         float getDistanceEntity(float angle, Entity &e);

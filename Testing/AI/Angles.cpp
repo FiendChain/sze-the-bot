@@ -7,6 +7,10 @@ float absFloat(float value) {
     return value > 0 ? value : -value;
 }
 
+float absFloat(sf::Vector2f &v) {
+    return pow(v.x*v.x + v.y*v.y, 0.5f);
+}
+
 // constrain an angle
 float constrainAngle(float angle) {
     while(angle > M_PI) {
@@ -50,3 +54,11 @@ float getAngle(float x, float y) {
     return angle;
 }
 
+// get vector from polar coordinates
+sf::Vector2f getRectFromPolar(float magnitude, float angle) {
+    angle = M_PI/2.0f + angle;
+    float x = magnitude * cos(angle);
+    float y = magnitude * sin(angle);
+    sf::Vector2f vector(x, y);
+    return vector;
+}

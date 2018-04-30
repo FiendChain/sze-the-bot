@@ -6,22 +6,9 @@
 #include <SFML/Graphics.hpp>
 #include "AI.h"
 #include "Entity.h"
-#include "Distance.h"
+#include "BotSensors.h"
 #include "Movement.h"
 #include <vector>
-
-class BotDistanceSensor {
-    public:
-        BotDistanceSensor(float _offsetDistance, float _angle, float maxRange, float fovAngle, float precision);
-        void update(sf::Vector2f position, float botAngle, std::vector<Entity> &objects);
-        void render(sf::RenderWindow &window);
-        float getLastDistance();
-    private:
-        DistanceSensor distanceSensor;
-        float lastDistance;
-        float offsetDistance;
-        float angle;
-};
 
 class Bot: public Entity {
     public:
@@ -32,15 +19,17 @@ class Bot: public Entity {
         void setAI(Movement (*funcPtr)(AI &));
         // distance sensors
         void addDistanceSensor(float offsetDistance, float angle, float maxRange, float fovRange, float precision);
-        void renderFOV(sf::RenderWindow &window);
-        void updateFOV(std::vector<Entity> &objects);
+        void addLineSensor(float offsetDistance, float angle, float range);
         // update and render
         void update(float dt);
+        void updateFOV(std::vector<Entity> &objects);
+        void updateLineSensor(std::vector<Entity> &floors);
         void render(sf::RenderWindow &window); // override default render
     private:
         // bot parts
         AI ai;
         std::vector<BotDistanceSensor> distanceSensors;
+        std::vector<BotLineSensor> lineSensors;
         // bot params
         float botSpeed;
         float turnRate;
@@ -48,6 +37,9 @@ class Bot: public Entity {
         Movement currentMove;
         // bot actions
         void move(float dt);
+        // render parts
+        void renderFOV(sf::RenderWindow &window);
+        void renderLineSensor(sf::RenderWindow &window);
 };
 
 #endif

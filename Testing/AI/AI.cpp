@@ -3,15 +3,14 @@
 
 // default initialisation
 AI::AI() {
-    isInside = 0;
     currentTime = 0;
     funcPtr = NULL;
 };
 
 // update the bot parameters
-void AI::update(float dt, std::vector<float> _distances, int _isInside) {
+void AI::update(float dt, std::vector<float> _distances, std::vector<int> _lineChecks) {
     distances = _distances;
-    isInside = _isInside;
+    lineChecks = _lineChecks;
     currentTime += dt*1000;
 }
 

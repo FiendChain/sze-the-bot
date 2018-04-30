@@ -8,13 +8,13 @@
 class AI {
     public:
         AI();
-        void update(float dt, std::vector<float> _distances, int _isInside); 
+        void update(float dt, std::vector<float> _distances, std::vector<int> _lineChecks); 
         Movement getMove();
         Movement (*funcPtr)(AI &);
         void setFunctionPointer(Movement (*_funcPtr)(AI &));
         // variable (public so sub classes can modify)
         std::vector<float> distances;
-        int isInside;
+        std::vector<int> lineChecks;
         float currentTime;  // milliseconds
 };
 

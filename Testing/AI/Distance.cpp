@@ -1,6 +1,7 @@
 #include "Distance.h"
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <stdarg.h>
 #include "Angles.h"
 
 DistanceSensor::DistanceSensor(float _fovAngle, float _maxRange, float _fovPoints) 
@@ -30,6 +31,11 @@ sf::Vector2f DistanceSensor::getPosition() {
     return position;
 }
 
+// render the sensor's fov field
+void DistanceSensor::render(sf::RenderWindow &window) {
+    window.draw(fov.data(), fov.size(), sf::LinesStrip);
+}
+
 // compute fov array
 // the fov array is made up of a discrete number of points
 // each point's distance is calculated, and stored
@@ -47,17 +53,12 @@ float DistanceSensor::getDistance(float angle, std::vector<Entity> &objects) {
             if(distance < closestDistance) {
                 closestDistance = distance;
             }
-            v.position.x = -(distance * sin(currAngle)) + position.x;
-            v.position.y = distance * cos(currAngle) + position.y;
+            v.position = getRectFromPolar(distance, currAngle) + position;
             currAngle -= increment;
         }
     }
+    // updateText(7, 0, 10, "Distance:%.0f", closestDistance); // debug text
     return closestDistance;
-}
-
-// render the sensor's fov field
-void DistanceSensor::render(sf::RenderWindow &window) {
-    window.draw(fov.data(), fov.size(), sf::LinesStrip);
 }
 
 // check if angle intersect at correct quadrant
@@ -96,10 +97,12 @@ float DistanceSensor::readAngle(float angle, std::vector<Entity> &objects) {
 float DistanceSensor::getDistanceEntity(float angle, Entity &e) {
     float distance = maxRange;
     // ignore if entity not within angular range
+    angle = constrainAngle(angle);
     if(!checkAngle(angle, e)) return distance; 
     // get distance
-    const float angleRange = 0.05;
-    if((angle <= angleRange && angle >= -angleRange) || (angle <= M_PI+angleRange && angle >= M_PI-angleRange)) {
+    const float angleRange = 0.02;
+    float absAngle = absFloat(angle);
+    if((absAngle <= angleRange && absAngle >= -angleRange) || (absAngle <= M_PI+angleRange && absAngle >= M_PI-angleRange)) {
         distance = getVerticalDistance(e);
     } else {
         // get line equation

@@ -15,22 +15,25 @@ int main(int argc, char *argv[]) {
     const int HEIGHT = 1000;
     const int FPS = 60;
     Simulation sim(WIDTH, HEIGHT, FPS, "Simulation");
+    // add arena
+    sim.addFloor(HEIGHT/2.0f, WIDTH/2.0f, HEIGHT/2.0f);
     // creating circular barrier
-    addRing(sim, 50, 20, HEIGHT/2.0f - 20, WIDTH/2.0f, HEIGHT/2.0f);
+    // addRing(sim, 50, 20, HEIGHT/2.0f - 20, WIDTH/2.0f, HEIGHT/2.0f);
     // create smaller ring 
     // addRing(sim, 8, 20, 250, WIDTH/2.0f - 100, HEIGHT/2.0f - 100);
     
     // add bots
     Bot firstBot(20, WIDTH/2.0f, HEIGHT/2.0f);
-    firstBot.addDistanceSensor(0, 0, 150, M_PI/2.0f, 101);
+    firstBot.addDistanceSensor(0, 0, 500, M_PI/2.0f, 101);
+    firstBot.addLineSensor(20, 0, 5);
     firstBot.setAngle(M_PI);
     firstBot.setSpeed(50);
     firstBot.setAI(&AI_TypeA);
     sim.addBot(firstBot);
     // custom bot
     Bot secondBot(30, WIDTH/2.0f, HEIGHT/3.0f);
-    secondBot.addDistanceSensor(0, 0, 200, M_PI/1.5f, 101);
-    secondBot.addDistanceSensor(0, M_PI, 200, M_PI/1.5f, 101);
+    secondBot.addDistanceSensor(0, 0, 500, M_PI/1.5f, 101);
+    secondBot.addLineSensor(30, 0, 5);
     secondBot.setAI(&AI_TypeB);
     sim.addBot(secondBot);
     // run program
@@ -41,23 +44,24 @@ int main(int argc, char *argv[]) {
 
 Movement AI_TypeA(AI &ai) {
     float distance = ai.distances.at(0);
-    if(distance < 100) {
-        return LEFT;
-    } else {
-        return FORWARD;
+    int check = ai.lineChecks.at(0);
+    if(!check) {
+        return RIGHT;
     }
+    return FORWARD;
 }
 
 Movement AI_TypeB(AI &ai) {
-    float distanceA = ai.distances.at(0);
-    float distanceB = ai.distances.at(1);
-    if(distanceA < 100) {
+    float distance = ai.distances.at(0);
+    int check = ai.lineChecks.at(0);
+    if(!check) {
         return RIGHT;
     }
-    if(distanceB < 50) {
+    if(distance < 500) {
+        return FORWARD;
+    } else {
         return LEFT;
     }
-    return FORWARD;
 }
 
 void addRing(Simulation &sim, int total, float size, float distance, float x, float y) {

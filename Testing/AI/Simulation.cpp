@@ -17,7 +17,11 @@ Simulation::Simulation(int width, int height, int fps, const char *name)
     window.setFramerateLimit(fps);
     font.loadFromFile("Arial.ttf");
     text.setFont(font);
+    #ifdef SFML_STATIC
     text.setFillColor(sf::Color::White);
+    #else
+    text.setColor(sf::Color::White);
+    #endif
 }
 
 // main exec command
@@ -45,6 +49,7 @@ void Simulation::update() {
     for(auto &b: bots) {
         b.update(dt);
         b.updateFOV(obstacles);
+        b.updateLineSensor(floors);
     }
 }
 
@@ -52,6 +57,9 @@ void Simulation::update() {
 // render all items
 void Simulation::render() {
     window.clear(sf::Color::Black);
+    for(auto &e: floors) {
+        e.render(window);
+    }
     for(auto &e: objects) {
         e.render(window);
     }
@@ -86,15 +94,23 @@ void Simulation::pollEvents() {
     }
 }
 
-// add an obstacle
+// add an obstacle for distance sensor
 void Simulation::addObstacle(float size, float x, float y) {
     Entity e(size, x, y);
     e.setFillColor(sf::Color::Red);
     objects.push_back(e);
 }
 
-void Simulation::addBot(Bot &bot) {
+// add a bot
+void Simulation::addBot(Bot bot) {
     bots.push_back(bot);
+}
+
+// add a floor for line sensor
+void Simulation::addFloor(float size, float x, float y) {
+    Entity e(size, x, y);
+    e.setFillColor(sf::Color::Blue);
+    floors.push_back(e);
 }
 
 // show telemetry
@@ -109,7 +125,7 @@ void Simulation::showText(int x, int y, int size, const char *format, ...) {
     char buffer[256] = {0};
     va_list args;
     va_start(args, format);
-    vsprintf(buffer, format, args);
+    vsnprintf(buffer, 256, format, args);
     va_end(args);
     text.setString(buffer);
     text.setPosition(x, y);

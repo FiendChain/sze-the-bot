@@ -11,11 +11,13 @@ class Simulation {
         Simulation(int width, int height, int fps, const char *name);
         int run();
         void addObstacle(float size, float x, float y);
-        void addBot(Bot &bot);
+        void addFloor(float size, float x, float y);
+        void addBot(Bot bot);
     private:
         // simulation entities
         std::vector<Entity> objects;
         std::vector<Bot> bots;
+        std::vector<Entity> floors;
         // rendering
         sf::RenderWindow window;
         sf::Font font;
