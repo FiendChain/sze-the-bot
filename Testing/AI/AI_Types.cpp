@@ -2,7 +2,7 @@
 #include "AI_Types.h"
 #include "BotSensors.h"
 #include "Text.h"
-#include <SFML/Window.hpp>
+#include "DebugConsole.h"
 #include <math.h>
 
 // BOT A
@@ -29,8 +29,9 @@ void addBotA(Simulation &sim) {
     rightDistanceSensor.setOffset(botSize, -rotateAngle);
     rightDistanceSensor.setRotate(0, true);
     firstBot.addDistanceSensor(rightDistanceSensor);
-    // line sensor
-    firstBot.addLineSensor(20, 0, 5);
+    // front line sensor
+    firstBot.addLineSensor(botSize, 0, 5);
+    firstBot.addLineSensor(botSize, M_PI, 5);
     // add bot to arena
     sim.addBot(firstBot);
 }
@@ -38,32 +39,55 @@ void addBotA(Simulation &sim) {
 Movement AI_TypeA(AI &ai) {
     // internal variables
     static int foundBarrier = 0;
+    static Movement currentMove = FORWARD;
+    static int reachedEdge = 0;
+    static float turnTime = 0;
     // debug
-    static sf::RenderWindow window(sf::VideoMode(800,600), "Bot Info");
+    static DebugConsole console(sf::VideoMode(800,600), "Bot Info");
+    console.setCharacterSize(15);
     // get bot info
     float leftDistance = ai.distances.at(0);
     float rightDistance = ai.distances.at(1);
-    int check = ai.lineChecks.at(0);
+    int checkFront = ai.lineChecks.at(0);
+    int checkBack = ai.lineChecks.at(1);
+    float currentTime = ai.currentTime;
     // show bot info
-    window.clear(sf::Color::Black);
-    sf::Vector2f textPosition(0, 0);
-    text.setPosition(textPosition);
-    text.setCharacterSize(15);
+    console.clear();
     // distance data
-    text.format("Left distance: %.0f", leftDistance);
-    window.draw(text);
-    text.format("Right distance: %.0f", rightDistance);
-    textPosition.y += text.getCharacterSize();
-    text.setPosition(textPosition);
-    window.draw(text);
-    window.display();
+    console.print("Left distance: %.0f", leftDistance);
+    console.print("Right distance: %.0f", rightDistance);
+    console.print("Current time: %.0f", currentTime);
+    console.display();
     // execute
-    if(foundBarrier) {
+    if(reachedEdge) {
+        if(currentTime-turnTime < 1000) {
+            return RIGHT;
+        } else {
+            reachedEdge = 0;
+            return FORWARD;
+        }
+    }
+    if(!checkFront) {
+        reachedEdge = 1;
+        turnTime = currentTime;
         return BACKWARD;
     }
-    if(!check) {
-        foundBarrier = 1;
-        return STOP;
+    if(!checkBack) {
+        reachedEdge = 1;
+        turnTime = currentTime;
+        return FORWARD;
+    }
+    if(leftDistance < 150 || rightDistance < 150) {
+        return FORWARD;
+    }
+    if(leftDistance < 100 && rightDistance < 100) {
+        if(leftDistance < rightDistance) {
+            return LEFT;
+        } else if(rightDistance > leftDistance) {
+            return RIGHT;
+        } else {
+            return FORWARD;
+        }
     }
     return FORWARD;
 } 
