@@ -110,9 +110,17 @@ void Bot::addDistanceSensor(float offsetDistance, float angle, float maxRange, f
     distanceSensors.push_back(distanceSensor);
 }
 
+void Bot::addDistanceSensor(BotDistanceSensor distanceSensor) {
+    distanceSensors.push_back(distanceSensor);
+}
+
 // add line sensor
 void Bot::addLineSensor(float offsetDistance, float angle, float range) {
     BotLineSensor lineSensor(range); 
     lineSensor.setOffset(offsetDistance, angle);
+    lineSensors.push_back(lineSensor);
+}
+
+void Bot::addLineSensor(BotLineSensor lineSensor) {
     lineSensors.push_back(lineSensor);
 }

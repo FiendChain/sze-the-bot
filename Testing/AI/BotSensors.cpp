@@ -10,8 +10,8 @@ BotSensor::BotSensor() {
     setOffset(0, 0);
 }
 
-void BotSensor::setOffset(float _offsetDistance, float _angle) {
-    angle = _angle;
+void BotSensor::setOffset(float _offsetDistance, float _offsetAngle) {
+    offsetAngle = _offsetAngle;
     offsetDistance = _offsetDistance;
 }
 
@@ -25,14 +25,23 @@ BotDistanceSensor::BotDistanceSensor(float maxRange, float fovAngle, float preci
     lastDistance(maxRange)
 {
     setOffset(0, 0);
+    setRotate(0, 0);
+}
+
+void BotDistanceSensor::setRotate(float _rotateAngle, int _rotateLock) {
+    rotateAngle = _rotateAngle;
+    rotateLock = _rotateLock;
 }
 
 void BotDistanceSensor::update(sf::Vector2f position, float botAngle, std::vector<Entity> &objects) {
-    float netAngle = constrainAngle(angle+botAngle);
+    float netAngle = constrainAngle(offsetAngle+botAngle);
     sf::Vector2f offsetPosition = getRectFromPolar(offsetDistance, netAngle);
     sf::Vector2f sensorPosition = position+offsetPosition;
     distanceSensor.setPosition(sensorPosition);
-    lastDistance = distanceSensor.getDistance(netAngle, objects);
+    // determine orientation of distance sensor
+    float sensorAngle = (rotateLock) ? botAngle+rotateAngle : netAngle+rotateAngle;
+    sensorAngle = constrainAngle(sensorAngle);
+    lastDistance = distanceSensor.getDistance(sensorAngle, objects);
 }
 
 float BotDistanceSensor::getLastDistance() {
@@ -40,10 +49,6 @@ float BotDistanceSensor::getLastDistance() {
 }
 
 void BotDistanceSensor::render(sf::RenderWindow &window) {
-    text.format("distance: %.0f", lastDistance);
-    sf::Vector2f offset(20, 10);
-    text.setPosition(offset+distanceSensor.getPosition());
-    window.draw(text);
     distanceSensor.render(window);
 }
 
@@ -56,7 +61,7 @@ BotLineSensor::BotLineSensor(float range)
 }
 
 void BotLineSensor::update(sf::Vector2f position, float botAngle, std::vector<Entity> &floors) {
-    float netAngle = constrainAngle(angle+botAngle);
+    float netAngle = constrainAngle(offsetAngle+botAngle);
     sf::Vector2f offsetPosition = getRectFromPolar(offsetDistance, netAngle);
     sf::Vector2f sensorPosition = position+offsetPosition;
     lineSensor.setPosition(sensorPosition);

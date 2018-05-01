@@ -9,19 +9,23 @@
 class BotSensor {
     public:
         BotSensor();
-        void setOffset(float _offsetDistance, float _angle);
+        void setOffset(float _offsetDistance, float _offsetAngle);
         void render(sf::RenderWindow &window);
-        float angle;
+        float offsetAngle;
         float offsetDistance;
 };
 
 class BotDistanceSensor: public BotSensor {
     public:
         BotDistanceSensor(float maxRange, float fovAngle, float precision);
+        void setRotate(float _rotateAngle, int _rotateLock);
         void update(sf::Vector2f position, float botAngle, std::vector<Entity> &objects);
         void render(sf::RenderWindow &window);
         float getLastDistance();
     private:
+        // parameters for angle lock
+        float rotateAngle;
+        int rotateLock;   // 0 = relative to overall angle, 1 = relative to botAngle 
         DistanceSensor distanceSensor;
         float lastDistance;
 };

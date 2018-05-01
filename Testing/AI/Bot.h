@@ -17,7 +17,9 @@ class Bot: public Entity {
         void setAI(Movement (*funcPtr)(AI &));
         // distance sensors
         void addDistanceSensor(float offsetDistance, float angle, float maxRange, float fovRange, float precision);
+        void addDistanceSensor(BotDistanceSensor distanceSensor);
         void addLineSensor(float offsetDistance, float angle, float range);
+        void addLineSensor(BotLineSensor lineSensor);
         // update and render
         void update(float dt);
         void updateFOV(std::vector<Entity> &objects);
