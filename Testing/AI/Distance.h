@@ -1,8 +1,9 @@
 #ifndef _DISTANCE_H_
 #define _DISTANCE_H_
+
+#include "Entity.h"
 #include <SFML/Graphics.hpp>
 #include <vector>
-#include "Entity.h"
 
 // distance sensor
 class DistanceSensor {

@@ -1,13 +1,11 @@
 #ifndef _BOT_H_
 #define _BOT_H_
-#define FOV_POINTS 31 // make it off to have a centre fov line
-#define MAX_RANGE 500
 
-#include <SFML/Graphics.hpp>
 #include "AI.h"
-#include "Entity.h"
 #include "BotSensors.h"
+#include "Entity.h"
 #include "Movement.h"
+#include <SFML/Graphics.hpp>
 #include <vector>
 
 class Bot: public Entity {

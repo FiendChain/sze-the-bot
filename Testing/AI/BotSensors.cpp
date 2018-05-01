@@ -2,6 +2,8 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include "Angles.h"
+#include <stdio.h>
+#include "Text.h"
 
 // base bot sensor class
 BotSensor::BotSensor() {
@@ -38,6 +40,10 @@ float BotDistanceSensor::getLastDistance() {
 }
 
 void BotDistanceSensor::render(sf::RenderWindow &window) {
+    text.format("distance: %.0f", lastDistance);
+    sf::Vector2f offset(20, 10);
+    text.setPosition(offset+distanceSensor.getPosition());
+    window.draw(text);
     distanceSensor.render(window);
 }
 

@@ -1,8 +1,8 @@
-#include "Distance.h"
 #define _USE_MATH_DEFINES
+#include "Angles.h"
+#include "Distance.h"
 #include <math.h>
 #include <stdarg.h>
-#include "Angles.h"
 
 DistanceSensor::DistanceSensor(float _fovAngle, float _maxRange, float _fovPoints) 
 :   fovAngle(_fovAngle),

@@ -1,7 +1,8 @@
 #ifndef _LINE_SENSOR_H_
 #define _LINE_SENSOR_H_
-#include <SFML/Graphics.hpp>
+
 #include "Entity.h"
+#include <SFML/Graphics.hpp>
 #include <vector>
 
 class LineSensor: public sf::CircleShape {

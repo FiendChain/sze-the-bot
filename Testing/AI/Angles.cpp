@@ -1,5 +1,5 @@
-#include "Angles.h"
 #define _USE_MATH_DEFINES
+#include "Angles.h"
 #include <math.h>
 
 // compute distance for an angle

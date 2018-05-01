@@ -1,7 +1,7 @@
-#include "Bot.h"
 #define _USE_MATH_DEFINES
-#include <math.h>
 #include "Angles.h"
+#include "Bot.h"
+#include <math.h>
 
 Bot::Bot(float size, float x, float y)
 {

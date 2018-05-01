@@ -1,9 +1,10 @@
-#include "Simulation.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdarg.h>
 #define _USE_MATH_DEFINES
+#include "Simulation.h"
+#include "Text.h"
 #include <math.h>
+#include <stdarg.h>
+#include <stdlib.h>
+Text text;
 
 Simulation::Simulation(int width, int height, int fps, const char *name)
 :   window(sf::VideoMode(width, height), name)
@@ -15,13 +16,6 @@ Simulation::Simulation(int width, int height, int fps, const char *name)
     dt = 1/(float)fps;
     // rendering
     window.setFramerateLimit(fps);
-    font.loadFromFile("Arial.ttf");
-    text.setFont(font);
-    #ifdef SFML_STATIC
-    text.setFillColor(sf::Color::White);
-    #else
-    text.setColor(sf::Color::White);
-    #endif
 }
 
 // main exec command
@@ -47,9 +41,9 @@ void Simulation::update() {
         obstacles.push_back(b);
     }
     for(auto &b: bots) {
-        b.update(dt);
         b.updateFOV(obstacles);
         b.updateLineSensor(floors);
+        b.update(dt);
     }
 }
 
@@ -94,6 +88,11 @@ void Simulation::pollEvents() {
     }
 }
 
+// get window params
+sf::Vector2u Simulation::getWindowSize() {
+    return window.getSize();
+}
+
 // add an obstacle for distance sensor
 void Simulation::addObstacle(float size, float x, float y) {
     Entity e(size, x, y);
@@ -117,17 +116,15 @@ void Simulation::addFloor(float size, float x, float y) {
 void Simulation::showTelemetry() {
     int x = 15, y = 15;
     // time
-    showText(x, y, 15, "Current time: %.3fs", currentTime);
-    showText(x, y+20, 15, "Timescale: %.2f%%", timescale*100);
+    showText(x, y, 20, "Current time: %.3fs", currentTime);
+    showText(x, y+20, 20, "Timescale: %.2f%%", timescale*100);
 }
 
 void Simulation::showText(int x, int y, int size, const char *format, ...) {
-    char buffer[256] = {0};
     va_list args;
     va_start(args, format);
-    vsnprintf(buffer, 256, format, args);
-    va_end(args);
-    text.setString(buffer);
+    text.vformat(format, args);
+    va_end(args); 
     text.setPosition(x, y);
     text.setCharacterSize(size);
     window.draw(text);

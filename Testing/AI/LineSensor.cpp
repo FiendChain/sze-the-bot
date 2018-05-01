@@ -1,6 +1,5 @@
-#include "LineSensor.h"
 #include "Angles.h"
-
+#include "LineSensor.h"
 #include <stdio.h>
 
 LineSensor::LineSensor(float range) {

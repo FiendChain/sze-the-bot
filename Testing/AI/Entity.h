@@ -1,5 +1,6 @@
 #ifndef _ENTITY_H_
 #define _ENTITY_H_
+
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
 

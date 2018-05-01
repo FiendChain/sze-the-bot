@@ -1,10 +1,11 @@
 #ifndef _RENDER_H_
 #define _RENDER_H_
+
 #include "Bot.h"
 #include "Entity.h"
-#include <vector>
 #include <SFML/Graphics.hpp>
 #include <SFML/Window.hpp>
+#include <vector>
 
 class Simulation {
     public:
@@ -13,6 +14,7 @@ class Simulation {
         void addObstacle(float size, float x, float y);
         void addFloor(float size, float x, float y);
         void addBot(Bot bot);
+        sf::Vector2u getWindowSize();
     private:
         // simulation entities
         std::vector<Entity> objects;
@@ -20,8 +22,6 @@ class Simulation {
         std::vector<Entity> floors;
         // rendering
         sf::RenderWindow window;
-        sf::Font font;
-        sf::Text text;
         // simulation parameters
         int fps;
         float dt;   // timescale

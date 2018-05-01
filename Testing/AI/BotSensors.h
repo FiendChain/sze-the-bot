@@ -1,10 +1,10 @@
 #ifndef _BOT_SENSORS_H_
 #define _BOT_SENSORS_H_
 
-#include <SFML/Graphics.hpp>
-#include <vector>
 #include "Distance.h"
 #include "LineSensor.h"
+#include <SFML/Graphics.hpp>
+#include <vector>
 
 class BotSensor {
     public:
