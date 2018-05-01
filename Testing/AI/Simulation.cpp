@@ -32,6 +32,7 @@ int Simulation::run() {
 // update simulation
 void Simulation::update() {
     currentTime += dt;
+    // update entities
     std::vector<Entity> obstacles;
     for(auto &e: objects) {
         e.update(dt);
@@ -40,11 +41,16 @@ void Simulation::update() {
     for(auto &b: bots) {
         obstacles.push_back(b);
     }
+    // update the bot sensors and move
     for(auto &b: bots) {
         b.updateFOV(obstacles);
         b.updateLineSensor(floors);
         b.update(dt);
     }
+    // check collision
+    // for(auto &e: obstacles) {
+    //     e.collide(obstacles);
+    // }
 }
 
 

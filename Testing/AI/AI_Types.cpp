@@ -1,5 +1,6 @@
 #define _USE_MATH_DEFINES
 #include "AI_Types.h"
+#include "Angles.h"
 #include "BotSensors.h"
 #include "Text.h"
 #include "DebugConsole.h"
@@ -16,7 +17,7 @@ void addBotA(Simulation &sim) {
     firstBot.setAI(&AI_TypeA);
     // distance sensor specs
     float fov = M_PI/5.0f;
-    float range = 200;
+    float range = 600;
     float precision = 31;
     float rotateAngle = M_PI/4.0f;
     // left sensor
@@ -51,45 +52,78 @@ Movement AI_TypeA(AI &ai) {
     int checkFront = ai.lineChecks.at(0);
     int checkBack = ai.lineChecks.at(1);
     float currentTime = ai.currentTime;
+    Movement move = STOP;
     // show bot info
     console.clear();
     // distance data
     console.print("Left distance: %.0f", leftDistance);
     console.print("Right distance: %.0f", rightDistance);
     console.print("Current time: %.0f", currentTime);
-    console.display();
-    // execute
+    
+    // rotate to avoid edge
     if(reachedEdge) {
         if(currentTime-turnTime < 1000) {
-            return RIGHT;
+            move = RIGHT;
         } else {
             reachedEdge = 0;
-            return FORWARD;
+            move = FORWARD;
+        }
+    } else {
+        // move forward into edge
+        if(!checkFront) {
+            reachedEdge = 1;
+            turnTime = currentTime;
+            move = BACKWARD;
+        // reverse into edge
+        } else if(!checkBack) {
+            reachedEdge = 1;
+            turnTime = currentTime;
+            move = FORWARD;
         }
     }
-    if(!checkFront) {
-        reachedEdge = 1;
-        turnTime = currentTime;
-        return BACKWARD;
-    }
-    if(!checkBack) {
-        reachedEdge = 1;
-        turnTime = currentTime;
-        return FORWARD;
-    }
-    if(leftDistance < 150 || rightDistance < 150) {
-        return FORWARD;
-    }
-    if(leftDistance < 100 && rightDistance < 100) {
-        if(leftDistance < rightDistance) {
-            return LEFT;
-        } else if(rightDistance > leftDistance) {
-            return RIGHT;
+    //if not avoiding being knocked out of arena
+    if(!reachedEdge) {
+        //if object found, try to centre
+        if(leftDistance < 600 && rightDistance < 600) {
+            if(absFloat(leftDistance-rightDistance) < 60) {
+                move = FORWARD;
+            }
+            if(absFloat(leftDistance-rightDistance) > 60) {
+                if(leftDistance < rightDistance) {
+                    move = LEFT;
+                } else if(rightDistance > leftDistance) {
+                    move = RIGHT;
+                } else {
+                    move = FORWARD;
+                }
+            }
+        // if nothing found and not on edge, rotate until find somethinf
         } else {
-            return FORWARD;
+            move = RIGHT;
         }
     }
-    return FORWARD;
+    // print current move
+    const char *moveText = "Current move: %s";
+    switch(move) {
+    case FORWARD:
+        console.print(moveText, "forward");
+        break;
+    case BACKWARD:
+        console.print(moveText, "backward");
+        break;
+    case LEFT:
+        console.print(moveText, "left");
+        break;
+    case RIGHT:
+        console.print(moveText, "right");
+        break;
+    case STOP:
+        console.print(moveText, "stop");
+        break;
+    }
+    // display debug
+    console.display();
+    return move;
 } 
 
 // BOT B
