@@ -1,8 +1,6 @@
 #define _USE_MATH_DEFINES
-#include "AI.h"
-#include "AI_Types.h"
-#include "Bot.h"
-#include "Simulation.h"
+#include "sources/AI_Types.h"
+#include "sources/Simulation.h"
 #include <math.h>
 #include <stdio.h>
 

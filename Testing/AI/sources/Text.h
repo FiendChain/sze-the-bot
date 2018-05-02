@@ -2,7 +2,7 @@
 #define _TEXT_H_
 
 #define DEFAULT_CHARACTER_SIZE 20
-#define DEFAULT_FONT "Arial.ttf"
+#define DEFAULT_FONT "resources/Arial.ttf"
 #define MAX_BUFFER 255
 #include <SFML/Graphics.hpp>
 #include <stdarg.h>
