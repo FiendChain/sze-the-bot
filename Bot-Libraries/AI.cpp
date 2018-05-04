@@ -4,23 +4,31 @@
 
 // default initialisation
 AI::AI() {
-    distance = 0;
+    leftDistance = 0;
+    rightDistance = 0;
     isInside = 0;
     currentTime = millis();
+    func = NULL;
 };
 
 // update the bot parameters
-void AI::update(float _distance, int _isInside) {
-    distance = _distance;
+void AI::update(float _leftDistance, float _rightDistance, int _isInside) {
+    leftDistance = _leftDistance;
+    rightDistance = _rightDistance;
     isInside = _isInside;
     currentTime = millis();
 }
 
 // get the move from the bot
 Movement AI::getMove() {
-    if(distance < 5) {
-        return LEFT;
+    if(func == NULL) {
+        return STOP;
     } else {
-        return FORWARD;
+        return func(leftDistance, rightDistance, isInside);
     }
+}
+
+// ai function
+void AI::setAI(Movement (*_func)(float, float, int)) {
+    func = _func;
 }

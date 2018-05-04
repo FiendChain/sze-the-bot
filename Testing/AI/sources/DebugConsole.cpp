@@ -35,7 +35,11 @@ void DebugConsole::vprint(const char *formatter, va_list args) {
     sf::Vector2f offset(0, currentLine*characterSize);
     text.setCharacterSize(characterSize);
     text.setPosition(offset+textPosition);
+    #ifdef SFML_STATIC
     text.setFillColor(textColor);
+    #else
+    text.setColor(textColor);
+    #endif
     currentLine++;
     window.draw(text);
 }

@@ -20,12 +20,18 @@ void Bot::control() {
     int magnitude = joystick.getMagnitude();
     rotate(angle, magnitude);
     #elif CONTROL_TYPE == 1
-    float distance = distanceSensor.read();
+    float leftDistance = leftDistanceSensor.read();
+    float rightDistance = rightDistanceSensor.read();
     int isInside = lineSensor.read();
-    ai.update(distance, isInside); 
+    ai.update(leftDistance, rightDistance, isInside); 
     Movement moveType = ai.getMove();
     move(moveType); 
     #else
     #warning No movement type for bot was chosen
     #endif
+}
+
+// give ai a function to call
+void Bot::setAI(Movement (*func)(float, float, int)) {
+    ai.setAI(func);
 }

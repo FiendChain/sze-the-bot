@@ -21,14 +21,14 @@ void Bot::debug() {
     leftMotor.debug();
     Serial.println("(Right motor)");
     rightMotor.debug();
+    #if CONTROL_TYPE == 0
     // joystick
     joystick.debug();
+    #endif
     // distance
     distanceSensor.debug();
     // line
     lineSensor.debug();
-    snprintf(buffer, MAX_BUFFER, "Total free memory: %u bytes\n", freeMemory());
-    Serial.println(buffer);
 }
 
 // debug joystick
@@ -60,7 +60,7 @@ void DistanceSensor::debug() {
     char buffer[MAX_BUFFER] = {0};
     snprintf(buffer, MAX_BUFFER, "<DistanceSensor at %p>\n", this);
     Serial.print(buffer);
-    snprintf(buffer, MAX_BUFFER, "echoPin:%d triggerPin:%d distance:%.02fcm\n", echoPin, triggerPin, read());
+    snprintf(buffer, MAX_BUFFER, "echoPin:%d triggerPin:%d distance:%dcm\n", echoPin, triggerPin, (int)read());
     Serial.print(buffer);
 }
 

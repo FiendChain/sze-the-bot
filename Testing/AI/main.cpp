@@ -14,15 +14,15 @@ int main(int argc, char *argv[]) {
     // add arena
     sim.addFloor(HEIGHT/2.0f, WIDTH/2.0f, HEIGHT/2.0f);
     // creating circular barrier
-    // addRing(sim, 50, 20, HEIGHT/2.0f - 20, WIDTH/2.0f, HEIGHT/2.0f);
+    addRing(sim, 50, 20, HEIGHT/2.0f - 20, WIDTH/2.0f, HEIGHT/2.0f);
     // create smaller ring 
     // addRing(sim, 8, 20, 250, WIDTH/2.0f - 100, HEIGHT/2.0f - 100);
     // add one object for targetting
-    sim.addObstacle(20, WIDTH/2.0f + 100, HEIGHT/2.0f - 300);
+    // sim.addObstacle(20, WIDTH/2.0f + 100, HEIGHT/2.0f - 300);
 
     // add bots
-    addBotA(sim);
-    // addBotB(sim);
+    // addBotA(sim);
+    addBotB(sim);
 
     // run program
     while(sim.run());

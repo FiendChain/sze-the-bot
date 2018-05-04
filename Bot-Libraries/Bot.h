@@ -14,8 +14,10 @@ class Bot {
         void setJoystickPins(int xPin, int yPin);
         void setLeftMotorPins(int power, int forward, int reverse);
         void setRightMotorPins(int power, int forward, int reverse);
-        void setDistancePins(int echo, int trigger);
+        void setLeftDistancePins(int echo, int trigger);
+        void setRightDistancePins(int echo, int trigger);
         void setLinePin(int linePin);
+        void setAI(Movement (*func)(float, float, int));
         // other
         void update();
         void debug();
@@ -26,11 +28,12 @@ class Bot {
         JoystickController joystick;
         MotorController leftMotor;
         MotorController rightMotor;
-        DistanceSensor distanceSensor;
+        DistanceSensor leftDistanceSensor;
+        DistanceSensor rightDistanceSensor;
         LineSensor lineSensor;
         // controls
-        void move(Movement moveType);
         void rotate(float angle, float magnitude);
+        void move(Movement moveType);
         // control method
         void control();
 };
