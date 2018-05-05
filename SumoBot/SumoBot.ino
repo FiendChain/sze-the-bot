@@ -1,6 +1,5 @@
 #include <Bot.h>
 #include <Constants.h>
-#include <Movement.h>
 
 Bot bot;
 // left motor
@@ -22,37 +21,6 @@ const int RIGHT_TRIGGER = 4;
 // line
 const int LINE = 5;
 
-Movement ai(float leftDistance, float rightDistance, int isInside) {  
-  static long long currentTime = 0;
-  static long long prevTime = 0;
-  static int isAvoid = 0;
-  static int i = 0;
-  currentTime = millis();
-  
-  // avoid falling off
-  if(isAvoid) {
-     if(currentTime-prevTime > 2000) {
-       isAvoid = 0;
-     } else if (i % 2 == 0) {
-         i++;
-         return BACKWARD;
-       } else {
-         i++;
-         return LEFT;
-       }
-  }
-  
-  
-  if(isInside) {
-    prevTime = millis();
-    isAvoid = 1;
-    return BACKWARD;
-  }
-  
-  
-  return FORWARD; 
-}
-
 void setup() {
   Serial.begin(9600);
   delay(1000);
@@ -64,11 +32,10 @@ void setup() {
   bot.setLeftDistancePins(LEFT_ECHO, LEFT_TRIGGER);
   bot.setRightDistancePins(RIGHT_ECHO, RIGHT_TRIGGER);
   bot.setLinePin(LINE);
-  bot.setAI(&ai);
 }
 
 void loop() {
-  bot.update();
+  update_ai();
   #ifdef DEBUGGING
   bot.debug();
   delay(1000);

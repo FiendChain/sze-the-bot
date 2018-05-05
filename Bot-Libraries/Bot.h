@@ -1,6 +1,5 @@
 #ifndef _BOT_H_
 #define _BOT_H_
-#include "AI.h"
 #include "Motor.h"
 #include "Joystick.h"
 #include "Distance.h"
@@ -17,13 +16,13 @@ class Bot {
         void setLeftDistancePins(int echo, int trigger);
         void setRightDistancePins(int echo, int trigger);
         void setLinePin(int linePin);
-        void setAI(Movement (*func)(float, float, int));
-        // other
-        void update();
+        // controls
+        void move(float angle, float magnitude);
+        void move(Movement moveType);
+        void controlJoystick();
+        void getSensorData(float &, float &, int &);
         void debug();
     private:
-        // bot ai
-        AI ai;
         // bot parts
         JoystickController joystick;
         MotorController leftMotor;
@@ -31,11 +30,6 @@ class Bot {
         DistanceSensor leftDistanceSensor;
         DistanceSensor rightDistanceSensor;
         LineSensor lineSensor;
-        // controls
-        void rotate(float angle, float magnitude);
-        void move(Movement moveType);
-        // control method
-        void control();
 };
 
 #endif

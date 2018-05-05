@@ -56,7 +56,7 @@ void Bot::move(Movement moveType) {
 // magnitude specifies how fast to move in that direction
 // magnitude goes from 0(MIN_PWM) to 255(MAX_PWM)
 // consider the angle and magnitude parameters as a vector, which determines the direction of the bot
-void Bot::rotate(float angle, float magnitude) {
+void Bot::move(float angle, float magnitude) {
     // constraining angle
     angle = constrain(angle, 0, 2*PI);
     magnitude = constrain(magnitude, MIN_PWM, MAX_PWM);
