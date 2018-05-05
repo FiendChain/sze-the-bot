@@ -20,6 +20,9 @@ class Simulation {
         std::vector<Entity> objects;
         std::vector<Bot> bots;
         std::vector<Entity> floors;
+        // user controllable object
+        Entity human;
+        float humanSpeed;
         // rendering
         sf::RenderWindow window;
         // simulation parameters
@@ -27,6 +30,7 @@ class Simulation {
         float dt;   // timescale
         float currentTime;
         float timescale;
+        void setTimescale(float _timescale);
         // methods
         void update();
         void render();

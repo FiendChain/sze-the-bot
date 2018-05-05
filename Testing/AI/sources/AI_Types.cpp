@@ -84,17 +84,14 @@ Movement AI_TypeA(AI &ai) {
     //if not avoiding being knocked out of arena
     if(!reachedEdge) {
         //if object found, try to centre
-        if(leftDistance < 600 && rightDistance < 600) {
-            if(absFloat(leftDistance-rightDistance) < 60) {
+        if(leftDistance < 600 || rightDistance < 600) {
+            if(absFloat(leftDistance-rightDistance) < 30) {
                 move = FORWARD;
-            }
-            if(absFloat(leftDistance-rightDistance) > 60) {
+            } else {
                 if(leftDistance < rightDistance) {
-                    move = LEFT;
-                } else if(rightDistance > leftDistance) {
                     move = RIGHT;
                 } else {
-                    move = FORWARD;
+                    move = LEFT;
                 }
             }
         // if nothing found and not on edge, rotate until find somethinf
