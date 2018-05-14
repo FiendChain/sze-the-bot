@@ -49,6 +49,7 @@
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}",
+                "${workspaceFolder}/sources",
                 "${workspaceFolder}/SFML/include",
                 "C:/MinGW/include",
                 "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++",
@@ -64,6 +65,7 @@
             "browse": {
                 "path": [
                     "${workspaceFolder}",
+                    "${workspaceFolder}/sources",
                     "${workspaceFolder}/SFML/include",
                     "C:/MinGW/include",
                     "C:/MinGW/lib/gcc/mingw32/6.3.0/include/c++",
@@ -77,5 +79,5 @@
             "cppStandard": "c++17"
         }
     ],
-    "version": 3
+    "version": 4
 }

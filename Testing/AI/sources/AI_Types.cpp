@@ -6,6 +6,22 @@
 #include "DebugConsole.h"
 #include <math.h>
 
+const char *getDirectionName(Movement move) {
+    switch(move) {
+    case FORWARD:
+        return "forward";
+    case BACKWARD:
+        return "backward";
+    case LEFT:
+        return "left";
+    case RIGHT:
+        return "right";
+    case STOP:
+        return "stop";
+    }
+    return NULL;
+}
+
 // BOT A
 void addBotA(Simulation &sim) {
     sf::Vector2u size = sim.getWindowSize();
@@ -43,12 +59,13 @@ Movement AI_TypeA(AI &ai) {
     static Movement currentMove = FORWARD;
     static int reachedEdge = 0;
     static float turnTime = 0;
+    static Movement lastDirection = LEFT;
     // debug
     static DebugConsole console(sf::VideoMode(800,600), "Bot Info");
     console.setCharacterSize(15);
     // get bot info
-    float leftDistance = ai.distances.at(0);
-    float rightDistance = ai.distances.at(1);
+    float leftDistance = ai.distances.at(1);
+    float rightDistance = ai.distances.at(0);
     int checkFront = ai.lineChecks.at(0);
     int checkBack = ai.lineChecks.at(1);
     float currentTime = ai.currentTime;
@@ -59,6 +76,13 @@ Movement AI_TypeA(AI &ai) {
     console.print("Left distance: %.0f", leftDistance);
     console.print("Right distance: %.0f", rightDistance);
     console.print("Current time: %.0f", currentTime);
+    if(leftDistance < 600 || rightDistance < 600) {
+        if(leftDistance < rightDistance) {
+            lastDirection = LEFT;
+        } else {
+            lastDirection = RIGHT;
+        }
+    }
     
     // rotate to avoid edge
     if(reachedEdge) {
@@ -84,40 +108,24 @@ Movement AI_TypeA(AI &ai) {
     //if not avoiding being knocked out of arena
     if(!reachedEdge) {
         //if object found, try to centre
-        if(leftDistance < 600 || rightDistance < 600) {
+        if(leftDistance < 550 || rightDistance < 550) {
             if(absFloat(leftDistance-rightDistance) < 30) {
                 move = FORWARD;
             } else {
                 if(leftDistance < rightDistance) {
-                    move = RIGHT;
-                } else {
                     move = LEFT;
+                } else {
+                    move = RIGHT;
                 }
             }
         // if nothing found and not on edge, rotate until find somethinf
         } else {
-            move = RIGHT;
+            move = lastDirection;
         }
     }
     // print current move
-    const char *moveText = "Current move: %s";
-    switch(move) {
-    case FORWARD:
-        console.print(moveText, "forward");
-        break;
-    case BACKWARD:
-        console.print(moveText, "backward");
-        break;
-    case LEFT:
-        console.print(moveText, "left");
-        break;
-    case RIGHT:
-        console.print(moveText, "right");
-        break;
-    case STOP:
-        console.print(moveText, "stop");
-        break;
-    }
+    console.print("Current move: %s", getDirectionName(move));
+    console.print("Last direction: %s", getDirectionName(lastDirection));
     // display debug
     console.display();
     return move;

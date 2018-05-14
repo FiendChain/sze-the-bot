@@ -89,6 +89,7 @@ void Simulation::pollEvents()
 {
     static float lastTimescale = 0;
     static float isPaused = 0;
+    static bool mousePressed = false;
     sf::Event event;
     while (window.pollEvent(event))
     {
@@ -116,9 +117,20 @@ void Simulation::pollEvents()
                 }
             }
         } else if (event.type == sf::Event::MouseButtonPressed) {
-            human.setPosition(event.mouseButton.x, event.mouseButton.y);
+            mousePressed = true;
+        } else if (event.type == sf::Event::MouseButtonReleased) {
+            mousePressed = false;
         }
 
+        // if (event.type == sf::Event::MouseMoved) {
+        //     if (mousePressed) {
+        //         human.setPosition(event.mouseButton.x, event.mouseButton.y);
+        //     }
+        // }
+    }
+    if (mousePressed) {
+        sf::Vector2i mousePos = sf::Mouse::getPosition(window);
+        human.setPosition(mousePos.x, mousePos.y);
     }
     // control human entity using wsad
     float x = 0;
